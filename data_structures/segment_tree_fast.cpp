@@ -14,7 +14,7 @@ struct node
 inline node operator+(const node &l, const node &r)
 {
 	node ret;
-	ret.sum = l.sum * r.sum;
+	ret.sum = l.sum + r.sum;
 	return ret;
 }
 

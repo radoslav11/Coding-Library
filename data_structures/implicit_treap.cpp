@@ -4,6 +4,9 @@
 using namespace std;
 const int MAXN = (1 << 20);
 
+random_device rd;
+mt19937 mt(rd());
+
 struct implicit_treap
 {
 	struct node
@@ -19,7 +22,7 @@ struct implicit_treap
 			rev = 0;
 			lazy = 0;
 			sz = 1;
-			priority = rand();
+			priority = mt();
 
 			l = NULL;
 			r = NULL;
@@ -207,12 +210,16 @@ struct implicit_treap
 	int get_pos(pnode curr, pnode son = nullptr)
 	{
 		if(!son)
+		{
 			if(curr == root) return size(curr->l);
 			else return size(curr->l) + get_pos(curr->par, curr);
-
+		}
+		
 		if(curr == root)
+		{
 			if(son == curr->l) return 0;
 			else return size(curr->l) + 1;
+		}
 
 		if(curr->l == son) return get_pos(curr->par, curr);
 		else return get_pos(curr->par, curr) + size(curr->l) + 1;

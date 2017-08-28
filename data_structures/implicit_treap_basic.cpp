@@ -4,6 +4,9 @@
 using namespace std;
 const int MAXN = (1 << 20);
 
+random_device rd;
+mt19937 mt(rd());
+
 struct implicit_treap
 {
 	struct node
@@ -11,7 +14,7 @@ struct implicit_treap
 		int sz, mx, val, prior;		
 		node *l, *r;
 		node() { sz = 0; mx = 0; val = 0; prior = 0; l = nullptr; r = nullptr; }
-		node(int _val) { val = _val; mx = val; sz = 1; prior = rand(); l = nullptr; r = nullptr; }
+		node(int _val) { val = _val; mx = val; sz = 1; prior = mt(); l = nullptr; r = nullptr; }
 	};
 
 	typedef node* pnode;

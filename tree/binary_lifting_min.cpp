@@ -29,7 +29,7 @@ void pre_dfs(int u, int pr)
 {
 	par[u][0] = pr;
 	par_mn[u][0] = w[u];
-	st[u] = dfs_time++;
+	st[u] = ++dfs_time;
 
 	for(int i = 1; i < MAXLOG; i++)
 	{

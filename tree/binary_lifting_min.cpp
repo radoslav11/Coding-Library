@@ -62,7 +62,7 @@ int get_path_up(int u, int anc)
 {
 	if(upper(u, anc)) return (int)1e9;
 
-	int ans = 0;
+	int ans = INT_MAX;
 	for(int l = MAXLOG - 1; l >= 0; l--)
 		if(!upper(par[u][l], anc))
 		{

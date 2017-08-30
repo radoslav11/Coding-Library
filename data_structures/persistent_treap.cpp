@@ -100,8 +100,6 @@ struct persistent_treap
 		operation(t);
 	}
 
-
-
 	pnode root;
 	persistent_treap() { root = nullptr; }
 

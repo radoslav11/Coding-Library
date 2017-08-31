@@ -33,7 +33,6 @@ void unite(int u, int v)
 	}
 
 	if(li[root(u)].size() > li[root(v)].size()) swap(u, v);
-	par[root(u)] = root(v);
 	
 	if(col[u] == col[v])
 		for(int ver: li[root(u)])
@@ -41,6 +40,8 @@ void unite(int u, int v)
 
 	for(int ver: li[root(u)])
 		li[root(v)].push_back(ver);
+	
+	par[root(u)] = root(v);
 }
 
 void solve()

@@ -6,48 +6,48 @@ const int MAXN = (1 << 20);
 
 struct node
 {
-	int sum;
-	node() { sum = 0; }
-	node(int _x) { sum = _x; }
+    int mx;
+    node() { mx = -1e9; }
+    node(int val) { mx = val; }
 };
 
-inline node operator+(const node &l, const node &r)
+node temp;
+
+node merge(node l, node r)
 {
-	node ret;
-	ret.sum = l.sum + r.sum;
-	return ret;
+    temp.mx = max(l.mx, r.mx);
+    return temp;
 }
 
-template<class T> 
 struct segment_tree
 {
     int n;
-    T t[2 * MAXN];
+    node t[2 * MAXN];
 
     void init(int sz)
     {
         n = sz;
-        for(int i = 0; i < n; i++) t[i + n] = T();
+        for(int i = 0; i < n; i++) t[i + n] = node();
         for(int i = n - 1; i > 0; --i)
-            t[i] = t[i << 1] + t[i << 1 | 1];
+            t[i] = merge(t[i << 1], t[i << 1 | 1]);
     }
 
-    void modify(int p, const T& value)
+    void modify(int p, const node& value)
     {
         for(t[p += n] = value; p >>= 1; )
-            t[p] = t[p << 1] + t[p << 1 | 1];
+            t[p] = merge(t[p << 1], t[p << 1 | 1]);
     }
 
-    T query(int l, int r)
+    node query(int l, int r)
     {
-        T resl, resr;
+        node resl, resr;
         for(l += n, r += n; l < r; l >>= 1, r >>= 1)
         {
-            if(l & 1) resl = resl + t[l++];
-            if(r & 1) resr = t[--r] + resr;
+            if(l & 1) resl = merge(resl, t[l++]);
+            if(r & 1) resr = merge(t[--r], resr);
         }
 
-        return resl + resr;
+        return merge(resl, resr);
     }
 };
 
@@ -56,7 +56,7 @@ void read()
 
 }
 
-segment_tree<node> t;
+segment_tree t;
 
 void solve()
 {

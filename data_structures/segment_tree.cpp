@@ -2,32 +2,39 @@
 #define endl '\n'
 
 using namespace std;
-const int MAXN = (1 << 20);
+const int MAXN = (1 << 18);
+
+int n, m;
+int a[MAXN];
 
 struct node
 {
 	int sum;
-	node() { sum = 0; }
-	node(int _x) { sum = _x; }
+
+	node() {sum = 0;}
+	node(int val)
+	{
+		sum = val;
+	}
 };
 
-inline node operator+(const node &l, const node &r)
+node temp, broken;
+
+node merge(node l, node r)
 {
-	node ret;
-	ret.sum = l.sum + r.sum;
-	return ret;
+	temp.sum = l.sum + r.sum;
+	return temp;
 }
 
-template<class T> 
 struct segment_tree
-{	
-	T tr[4 * MAXN];
+{
+	node tr[4 * MAXN];
 
 	void init(int l, int r, int idx)
 	{
-		if(l == r) 
+		if(l == r)
 		{
-			tr[idx] = T();
+			tr[idx] = node(a[l]);
 			return;
 		}
 
@@ -35,47 +42,59 @@ struct segment_tree
 		init(l, mid, 2 * idx + 1);
 		init(mid + 1, r, 2 * idx + 2);
 
-		tr[idx] = tr[2 * idx + 1] + tr[2 * idx + 2];
+		tr[idx] = merge(tr[2 * idx + 1], tr[2 * idx + 2]);
 	}
 
-	void update(int pos, int new_val, int l, int r, int idx)
+	void update(int pos, int val, int l, int r, int idx)
 	{
-		if(pos < l || pos > r)
+		if(l > pos || r < pos)
 			return;
 
-		if(l == r && pos == l) 
+		if(l == r && l == pos)
 		{
-			tr[idx] = T(new_val);
+			tr[idx].sum += val;
 			return;
 		}
 
 		int mid = (l + r) >> 1;
-		update(pos, new_val, l, mid, 2 * idx + 1);
-		update(pos, new_val, mid + 1, r, 2 * idx + 2);
+		update(pos, val, l, mid, 2 * idx + 1);
+		update(pos, val, mid + 1, r, 2 * idx + 2);
 
-		tr[idx] = tr[2 * idx + 1] + tr[2 * idx + 2];
+		tr[idx] = merge(tr[2 * idx + 1], tr[2 * idx + 2]);
 	}
 
-	T query(int ql, int qr, int l, int r, int idx)
+	node query(int qL, int qR, int l, int r, int idx)
 	{
-		if(ql > r || l > qr) return T();
-		if(ql <= l && r <= qr) return tr[idx];
-	
-		int mid = (l + r) >> 1;
-		return query(ql, qr, l, mid, 2 * idx + 1) + query(ql, qr, mid + 1, r, 2 * idx + 2);
-	}	
-};
+		if(l > qR || r < qL)
+			return broken;
 
-segment_tree<node> t;
+		if(qL <= l && r <= qR)
+			return tr[idx];
+
+		int mid = (l + r) >> 1;
+		return merge(query(qL, qR, l, mid, 2 * idx + 1), query(qL, qR, mid + 1, r, 2 * idx + 2));
+	}
+};
 
 void read()
 {
-
+	cin >> n >> m;
+	for(int i = 0; i < n; i++)
+		cin >> a[i];
 }
+
+segment_tree t;
 
 void solve()
 {
+	t.init(0, n - 1, 0);
 
+	for(int i = 0; i < m; i++)
+	{
+		int l, r;
+		cin >> l >> r;
+		cout << t.query(l, r, 0, n - 1, 0).sum << endl;
+	}
 }
 
 int main()

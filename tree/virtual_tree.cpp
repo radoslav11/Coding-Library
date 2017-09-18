@@ -90,7 +90,7 @@ void build_tree(vector<int> vec)
     msize = 0;
     mstack[msize++] = vec[0];
 
-    for(int i = 1; i < vec.size(); i++)
+    for(int i = 1; i < (int)vec.size(); i++)
     {
         int anc = lca(mstack[msize - 1], vec[i]);
         if(anc != mstack[msize - 1])

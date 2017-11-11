@@ -76,7 +76,7 @@ struct max_flow
         return 0;
     }
 
-    void init(int _n) { n = _n; }
+    void init(int _n) { n = _n; for(int i = 0; i <= n; i++) G[i].clear(); }
 
     void add_edge(int u, int v, FlowT w, int idx = -1)
     {

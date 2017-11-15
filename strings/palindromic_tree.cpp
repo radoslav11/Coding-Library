@@ -3,7 +3,6 @@
 
 using namespace std;
 const int MAXN = (1 << 20);
-const int ALPH = SIGMA;
 
 struct palindromic_tree
 {
@@ -33,8 +32,8 @@ struct palindromic_tree
 		
 		if(!to[last][c])
 		{
-			len[sz] = len[last] + 2;
-			link[sz] = to[get_link(link[last])][c];
+			len[psz] = len[last] + 2;
+			link[psz] = to[get_link(link[last])][c];
 			to[last][c] = psz++;
 		}
 		

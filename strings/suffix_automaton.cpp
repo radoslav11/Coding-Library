@@ -76,7 +76,7 @@ struct suffix_automaton
 	void init(string s)
 	{
 		clear();
-		for(int i = 0; i < s.size(); i++)
+		for(int i = 0; i < (int)s.size(); i++)
 			add_letter(s[i]);
 	}
 	

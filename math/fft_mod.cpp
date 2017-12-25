@@ -157,36 +157,14 @@ vector<int> mult_mod(const vector<int> &a, const vector<int> &b)
 	return res;
 }
 
-int n;
-
 void read()
 {
-	cin >> n >> mod;
-}
 
-vector<int> solve(int n)
-{
-	if(n == 0)
-		return vector<int>(1, 1);
-
-	if(n % 2 == 1)
-	{
-		vector<int> ret = solve(n - 1);
-		ret.push_back(ret.back());
-		for(int i = (int)ret.size() - 2; i >= 1; i--)
-			addmod(ret[i], ret[i - 1], mod);
-
-		return ret;
-	}
-
-	vector<int> hlf = solve(n / 2);
-	return mult_mod(hlf, hlf);
 }
 
 void solve()
 {
-	vector<int> answer = solve(n);
-	for(int i = 0; i <= n; i++) cout << answer[i] << endl;
+
 }
 
 int main()

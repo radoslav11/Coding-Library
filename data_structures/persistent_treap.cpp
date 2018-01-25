@@ -63,7 +63,7 @@ struct persistent_treap
 
 		if(l->prior > r->prior)
 		{
-			t = copy_node(r);
+			t = copy_node(l);
 			merge(t->r, l->r, r);
 		}
 		else	

@@ -9,7 +9,7 @@ struct node
 	int sum;
 	node *l, *r;
 	node() { l = nullptr; r = nullptr; sum = 0; }
-	node(int x) { sum = x; l = nullptr; r = nullptr;	}
+	node(int x) { sum = x; l = nullptr; r = nullptr; }
 };
 
 typedef node* pnode;
@@ -46,7 +46,7 @@ int query(int qL, int qR, int l, int r, pnode nd)
 	if(qL > r || qR < l) return 0;
 
 	int mid = (l + r) >> 1;
-    return query(qL, qR, l, mid, nd->l) + query(qL, qR, mid + 1, r, nd->r);
+	return query(qL, qR, l, mid, nd->l) + query(qL, qR, mid + 1, r, nd->r);
 }
 
 int get_kth(int k, int l, int r, pnode nd)

@@ -21,17 +21,14 @@ struct persistent_treap
 
 	pnode copy_node(pnode prv)
 	{
+		if(!prv) return nullptr;
+
 		pnode ret = new node();
-
-		if(prv)
-		{
-			ret->l = prv->l;
-			ret->r = prv->r;
-			ret->val = prv->val;
-			ret->sz = prv->sz;
-			ret->mx = prv->mx;
-		}
-
+		ret->l = prv->l;
+		ret->r = prv->r;
+		ret->val = prv->val;
+		ret->sz = prv->sz;
+		ret->mx = prv->mx;
 		return ret;
 	}
 

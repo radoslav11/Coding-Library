@@ -21,18 +21,15 @@ struct persistent_treap
 
 	pnode copy_node(pnode prv)
 	{
+		if(!prv) return nullptr;
+
 		pnode ret = new node();
-
-		if(prv)
-		{
-			ret->l = prv->l;
-			ret->r = prv->r;
-			ret->val = prv->val;
-			ret->sz = prv->sz;
-			ret->mx = prv->mx;
-			ret->lazy = prv->lazy;
-		}
-
+		ret->l = prv->l;
+		ret->r = prv->r;
+		ret->val = prv->val;
+		ret->sz = prv->sz;
+		ret->mx = prv->mx;
+		ret->lazy = prv->lazy;
 		return ret;
 	}
 
@@ -81,7 +78,7 @@ struct persistent_treap
 
 		if(l->prior > r->prior)
 		{
-			t = copy_node(r);
+			t = copy_node(l);
 			merge(t->r, l->r, r);
 		}
 		else	

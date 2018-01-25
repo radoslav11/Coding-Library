@@ -64,8 +64,7 @@ void push(int l, int r, pnode &ver)
 
 pnode init(int l, int r)
 {
-	if(l == r) return new node(a[l]);
-	
+	if(l == r) return new node(a[l]);	
 	int mid = (l + r) >> 1;
 	return merge(init(l, mid), init(mid + 1, r));
 }

@@ -50,8 +50,8 @@ struct matrix
 	{
 		matrix<T> c = matrix<T>(n);
 		for(int i = 0; i < n; i++)
-            for(int j = 0; j < n; j++)
-                c.t[i][j] =  (t[i][j] + b.t[i][j]) % mod;
+			for(int j = 0; j < n; j++)
+				c.t[i][j] =  (t[i][j] + b.t[i][j]) % mod;
 
 		return c;
 	}
@@ -61,7 +61,7 @@ struct matrix
 		matrix<T> c = matrix<T>(n);
 		for(int i = 0; i < n; i++)
             for(int j = 0; j < n; j++)
-                c.t[i][j] = (t[i][j] - b.t[i][j] + mod) % mod;
+				c.t[i][j] = (t[i][j] - b.t[i][j] + mod) % mod;
 
 		return c;
 	}

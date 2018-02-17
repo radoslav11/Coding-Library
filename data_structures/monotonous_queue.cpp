@@ -23,7 +23,7 @@ struct monotonous_queue_max
 
 	void push_back(T x)
 	{
-		while(!Q.empty() && current_position - Q.front().first >= len) Q.pop_front();
+		while(!Q.empty() && current_position - Q.front().second >= len) Q.pop_front();
 		while(!Q.empty() && x >= Q.back().first) Q.pop_back();
 		Q.push_back({x, current_position++});
 	}
@@ -31,7 +31,7 @@ struct monotonous_queue_max
 	T query()
 	{
 		if(Q.empty()) return -(T)1e9;
-		return Q.back().first;
+		return Q.front().first;
 	}
 };
 
@@ -52,7 +52,7 @@ struct monotonous_queue_min
 
 	void push_back(T x)
 	{
-		while(!Q.empty() && current_position - Q.front().first >= len) Q.pop_front();
+		while(!Q.empty() && current_position - Q.front().second >= len) Q.pop_front();
 		while(!Q.empty() && x <= Q.back().first) Q.pop_back();
 		Q.push_back({x, current_position++});
 	}
@@ -60,7 +60,7 @@ struct monotonous_queue_min
 	T query()
 	{
 		if(Q.empty()) return (T)1e9;
-		return Q.back().first;
+		return Q.front().first;
 	}
 };
 

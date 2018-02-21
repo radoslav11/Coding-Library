@@ -114,6 +114,8 @@ struct aho_corasick
 				li[pos].push_back(s2);
 				ac[pos].add_word(s2);
 			}
+			
+			li[bef].clear();
 		}
 
 		ac[pos].push_links();

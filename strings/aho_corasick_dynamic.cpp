@@ -6,16 +6,17 @@ const int MAXN = (1 << 20);
 
 struct aho_corasick_static
 {
-	int cnt[MAXN], link[MAXN], psz;
+	int cnt[MAXN], len[MAXN], link[MAXN], psz;
 	map<char, int> to[MAXN];
 
 	void clear()
 	{
 		for(int i = 0; i < psz; i++)
-			cnt[i] = 0, link[i] = 0, to[i].clear();
+			cnt[i] = 0, len[i] = 0, link[i] = -1, to[i].clear();
 
 		psz = 1;
-		cnt[0] = 1;
+		link[0] = -1;
+		cnt[0] = 0;
 	}
 
 	aho_corasick_static() { psz = MAXN - 2; clear(); }
@@ -25,7 +26,7 @@ struct aho_corasick_static
 		int u = 0;
 		for(char c: s)
 		{
-			if(!to[u].count(c)) to[u][c] = psz++;
+			if(!to[u].count(c)) to[u][c] = psz++, len[psz - 1] = len[u] + 1;
 			u = to[u][c];
 		}
 
@@ -56,8 +57,8 @@ struct aho_corasick_static
 				if(j != -1) link[v] = to[j][c];
 				else link[v] = 0;
 
-				Q.push(v);
 				cnt[v] += cnt[link[v]];
+				Q.push(v);
 			}
 		}
 	}
@@ -126,18 +127,18 @@ struct aho_corasick
 		int ans = 0;
 		for(int l = 0; l < 20; l++)
 			ans += ac[l].count(s);
-		
+
 		return ans;
 	}
 };
 
-int n, m;
+int m;
 string s[MAXN];
 
 void read()
 {
-	cin >> n >> m;
-	for(int i = 0; i < m; i++)
+	cin >> m;
+	for(int i= 0; i < m; i++)
 		cin >> s[i];
 }
 
@@ -147,7 +148,10 @@ void solve()
 {
 	aho.clear();
 	for(int i = 0; i < m; i++)
+	{
 		aho.add_word(s[i]);
+		cout << aho.count("aaaaaasssaaa") << endl;
+	}
 }
 
 int main()

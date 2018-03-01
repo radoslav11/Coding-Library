@@ -25,6 +25,7 @@ struct dsu
 	void unite(int x, int y)
 	{
 		x = root(x), y = root(y);
+		if(x == y) return;
 		if(psz[x] > psz[y]) swap(x, y);
 		par[x] = y, psz[y] += psz[x]; 
 	}

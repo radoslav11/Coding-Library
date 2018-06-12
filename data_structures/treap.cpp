@@ -14,7 +14,7 @@ struct node
 	int sz, prior, value;
 	node *l, *r;
 	node() { value = 0; sz = 0; prior = 0; l = nullptr; r = nullptr; }
-	node(int v) { value = v; sz = 1; prior = rand(); l = nullptr; r = nullptr; }
+	node(int v) { value = v; sz = 1; prior = mt(); l = nullptr; r = nullptr; }
 };
 
 typedef node* pnode;

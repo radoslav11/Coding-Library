@@ -14,20 +14,35 @@ mt19937_64 mt(rd());
 
 struct node
 {
-	int sz, prior, id;
+	int sz, prior, id, rev;
 	node *par, *pp, *l, *r;
-	node() { id = 0; sz = 0; prior = 0; par = nullptr; l = nullptr; r = nullptr; }
-	node(int v) { id = v; sz = 1; prior = mt(); l = nullptr; r = nullptr; }
+	node() { id = 0; sz = 0; rev = 0; prior = 0; par = nullptr; l = nullptr; r = nullptr; }
+	node(int v) { id = v; sz = 1; rev = 0; prior = mt(); l = nullptr; r = nullptr; }
 };
 
 typedef node* pnode;
 
-int size(pnode v) { return v ? v->sz : 0; }
+inline int size(pnode v) { return v ? v->sz : 0; }
+
+void push(pnode &t)
+{
+	if(!t) return;
+	if(t->rev)
+	{
+		swap(t->l, t->r);
+		if(t->l) t->l->rev ^= 1;
+		if(t->r) t->r->rev ^= 1;
+		t->rev = 0;
+	}
+}
 
 void pull(pnode &v) 
 { 
 	if(!v) return;
 	
+	push(v->l);
+	push(v->r);
+
 	v->par = nullptr;
 	v->sz = size(v->l) + size(v->r) + 1; 
 	
@@ -40,6 +55,7 @@ void pull(pnode &v)
 
 void merge(pnode &t, pnode l, pnode r)
 {
+	push(l), push(r);
 	if(!l) { t = r; return; }
 	if(!r) { t = l; return; }
 
@@ -53,6 +69,7 @@ void merge(pnode &t, pnode l, pnode r)
 
 void split(pnode t, pnode &l, pnode &r, int k, int add = 0)
 {
+	push(t);
 	if(!t) { l = nullptr; r = nullptr; return; }
 
 	int idx = add + size(t->l);
@@ -71,9 +88,11 @@ pnode remove_right(pnode t)
 	pnode rt = t;
 
 	int pos = size(rt->l);
+	if(rt->rev) pos = size(rt) - pos - 1;
 	while(rt->par)
 	{
 		if(rt->par->r == rt) pos += size(rt->par->l) + 1;
+		if(rt->par->rev) pos = size(rt->par) - pos - 1;
 		rt = rt->par;
 	}
 
@@ -92,9 +111,11 @@ pnode remove_left(pnode t)
 	pnode rt = t;
 
 	int pos = size(rt->l);
+	if(rt->rev) pos = size(rt) - pos - 1;
 	while(rt->par)
 	{
 		if(rt->par->r == rt) pos += size(rt->par->l) + 1;
+		if(rt->par->rev) pos = size(rt->par) - pos - 1;
 		rt = rt->par;
 	}
 
@@ -135,14 +156,21 @@ struct link_cut_tree
 	pnode find_root(pnode u)
 	{
 		u = access(u);
-		while(u->r) u = u->r;
+		push(u); while(u->l) u = u->l, push(u);
 		access(u);
 		return u;
 	}
 
+	void make_root(pnode u)
+	{
+		u = access(u);
+		u->rev ^= 1;
+		push(u);
+	}
+
 	void link(pnode u, pnode w)
 	{
-		access(u);
+		make_root(u);
 		access(w);
 		merge_trees(w, u);
 	}
@@ -175,6 +203,7 @@ struct link_cut_tree
 	inline int lca(int u, int v) { return lca(ver[u], ver[v])->id; }
 	inline int root(int u) { return find_root(ver[u])->id; }
 	inline void link(int u, int v) { link(ver[u], ver[v]); }
+	inline void make_root(int u) { make_root(ver[u]); }
 	inline int depth(int u) { return depth(ver[u]); }
 	inline void cut(int u) { cut(ver[u]); }
 };
@@ -197,23 +226,24 @@ void solve()
 		string type;
 		cin >> type;
 
-		if(type == "link")
+		if(type == "add")
 		{
 			int u, w;
 			cin >> u >> w;
 			lct.link(u, w);
 		}
-		else if(type == "lca")
+		else if(type == "conn")
 		{
 			int u, v;
 			cin >> u >> v;
-			cout << lct.lca(u, v) << endl;
+			cout << (lct.root(u) == lct.root(v) ? "YES" : "NO") << endl;
 		}
-		else if(type == "cut")
+		else if(type == "rem")
 		{
-			int u;
-			cin >> u;
-			lct.cut(u);
+			int u, v;
+			cin >> u >> v;
+			if(lct.depth(u) > lct.depth(v)) swap(u, v);
+			lct.cut(v);
 		}
 
 	}

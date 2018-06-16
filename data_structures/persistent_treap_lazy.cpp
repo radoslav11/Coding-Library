@@ -11,10 +11,10 @@ struct persistent_treap
 {
 	struct node
 	{
-		int sz, mx, val, prior, lazy;		
+		int sz, mx, val, lazy;		
 		node *l, *r;
-		node() { sz = 0; mx = 0; lazy = 0; val = 0; prior = 0; l = nullptr; r = nullptr; }
-		node(int _val) { lazy = 0; val = _val; mx = val; sz = 1; prior = mt(); l = nullptr; r = nullptr; }
+		node() { sz = 0; mx = 0; lazy = 0; val = 0; l = nullptr; r = nullptr; }
+		node(int _val) { lazy = 0; val = _val; mx = val; sz = 1; l = nullptr; r = nullptr; }
 	};
 
 	typedef node* pnode;
@@ -36,6 +36,7 @@ struct persistent_treap
 	int size(pnode v) { return v ? v->sz : 0; }
 	void update_size(pnode &v) { if(v) v->sz = size(v->l) + size(v->r) + 1; }
 	void reset(pnode &v) { if(v) v->mx = v->val; }
+	bool hey(int a, int b) { return (int)mt() % (a + b) < a; }
 
 	void push(pnode &t)
 	{
@@ -76,7 +77,7 @@ struct persistent_treap
 		if(!l) { t = copy_node(r); return; }
 		if(!r) { t = copy_node(l); return; }
 
-		if(l->prior > r->prior)
+		if(hey(size(l), size(r)))
 		{
 			t = copy_node(l);
 			merge(t->r, l->r, r);

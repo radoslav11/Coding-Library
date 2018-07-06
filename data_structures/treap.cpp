@@ -7,7 +7,7 @@ template<class T, class T2> inline void chkmin(T &x, const T2 &y) { if(x > y) x 
 const int MAXN = (1 << 20);
 
 random_device rd;
-mt19937_64 mt(rd());
+mt19937 mt(rd());
 
 struct node
 {
@@ -19,8 +19,13 @@ struct node
 
 typedef node* pnode;
 
-int size(pnode v) { return v ? v->sz : 0; }
-void update_size(pnode &v) { if(v) v->sz = size(v->l) + size(v->r) + 1; }
+inline int size(pnode v) { return v ? v->sz : 0; }
+
+void pull(pnode &v) 
+{ 
+	if(!v) return;
+	v->sz = size(v->l) + size(v->r) + 1; 
+}
 
 void merge(pnode &t, pnode l, pnode r)
 {
@@ -32,7 +37,7 @@ void merge(pnode &t, pnode l, pnode r)
 	else
 		merge(r->l, l, r->l), t = r;
 
-	update_size(t);
+	pull(t);
 }
 
 void split(pnode t, pnode &l, pnode &r, int k)
@@ -44,7 +49,7 @@ void split(pnode t, pnode &l, pnode &r, int k)
 	else
 		split(t->l, l, t->l, k), r = t;
 
-	update_size(t);
+	pull(t);
 }
 
 void merge_op(pnode &t, pnode l, pnode r)
@@ -61,7 +66,7 @@ void merge_op(pnode &t, pnode l, pnode r)
 	merge_op(l->l, L, l->l);
 
 	t = l;
-	update_size(t);
+	pull(t);
 }
 
 void split_sz(pnode t, pnode &l, pnode &r, int k, int add = 0)
@@ -74,7 +79,7 @@ void split_sz(pnode t, pnode &l, pnode &r, int k, int add = 0)
 	else
 		split_sz(t->l, l, t->l, k, add), r = t;
 
-	update_size(t);
+	pull(t);
 }
 
 void read()

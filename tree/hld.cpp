@@ -1,178 +1,121 @@
 #include <bits/stdc++.h>
 #define endl '\n'
 
+//#pragma GCC optimize ("O3")
+//#pragma GCC target ("sse4")
+
 using namespace std;
+template<class T, class T2> inline int chkmax(T &x, const T2 &y) { return x < y ? x = y, 1 : 0; }
+template<class T, class T2> inline int chkmin(T &x, const T2 &y) { return x > y ? x = y, 1 : 0; }
 const int MAXN = (1 << 20);
-const int MAXLOG = 24;
-
-int st[MAXN], en[MAXN];
-int par[MAXN][MAXLOG], lgn, dfs_time;
-int tr_sz[MAXN], head[MAXN], root, vert[MAXN];
-
-struct node
-{
-	int sum;
-
-	node() {sum = 0;}
-	node(int val)
-	{
-		sum = val;
-	}
-};
-
-node temp, broken;
-
-node merge(node l, node r)
-{
-	temp.sum = l.sum + r.sum;
-	return temp;
-}
-
-struct segment_tree
-{
-	node tr[4 * MAXN];
-
-	void init(int l, int r, int idx)
-	{
-		if(l == r)
-		{
-			tr[idx] = node(vert[l]);
-			return;
-		}
-
-		int mid = (l + r) >> 1;
-		init(l, mid, 2 * idx + 1);
-		init(mid + 1, r, 2 * idx + 2);
-
-		tr[idx] = merge(tr[2 * idx + 1], tr[2 * idx + 2]);
-	}
-
-	void update(int pos, int val, int l, int r, int idx)
-	{
-		if(l > pos || r < pos)
-			return;
-
-		if(l == r && l == pos)
-		{
-			tr[idx].sum += val;
-			return;
-		}
-
-		int mid = (l + r) >> 1;
-		update(pos, val, l, mid, 2 * idx + 1);
-		update(pos, val, mid + 1, r, 2 * idx + 2);
-
-		tr[idx] = merge(tr[2 * idx + 1], tr[2 * idx + 2]);
-	}
-
-	node query(int qL, int qR, int l, int r, int idx)
-	{
-		if(l > qR || r < qL)
-			return broken;
-
-		if(qL <= l && r <= qR)
-			return tr[idx];
-
-		int mid = (l + r) >> 1;
-		return merge(query(qL, qR, l, mid, 2 * idx + 1), query(qL, qR, mid + 1, r, 2 * idx + 2));
-	}
-};
 
 int n;
-vector<int> G[MAXN];
+vector<int> adj[MAXN];
 
 void read()
 {
 	cin >> n;
-
 	for(int i = 0; i < n - 1; i++)
 	{
 		int u, v;
 		cin >> u >> v;
-		G[u].push_back(v);
-		G[v].push_back(u);
+		adj[u].push_back(v);
+		adj[v].push_back(u);
 	}
 }
 
-segment_tree t;
+int tr_sz[MAXN];
 
-void pre_dfs(int u, int pr)
+int pre_dfs(int u, int pr)
 {
 	tr_sz[u] = 1;
-	for(int v: G[u])
+	for(int v: adj[u])
 		if(v != pr)
-		{
-			pre_dfs(v, u);
-			tr_sz[u] += tr_sz[v];
-		}
+			tr_sz[u] += pre_dfs(v, u);
+
+	return tr_sz[u];
 }
 
-void decompose(int u, int head, int pr)
+int head[MAXN], par[MAXN][20], st[MAXN], en[MAXN], dfs_time;
+
+void decompose(int u, int pr, int head)
 {
-	par[u][0] = pr;
-	for(int l = 1; l <= lgn; l++)
-		par[u][l] = par[par[u][l - 1]][l - 1];
-
-	st[u] = ++dfs_time;
-	vert[dfs_time] = u;
 	::head[u] = head;
+	st[u] = ++dfs_time;
 
-	pair<int, int> mx = {-1, -1};
-	for(int v: G[u])
+	par[u][0] = pr;
+	for(int i = 1; i < 20; i++)
+		par[u][i] = par[par[u][i - 1]][i - 1];
+
+	int mx_sz = -1, f_c = -1;
+	for(int v: adj[u])
 		if(v != pr)
-			mx = max(mx, {tr_sz[v], v});
+			if(chkmax(mx_sz, tr_sz[v]))
+				f_c = v;
 
-	if(mx.second != -1)
-		decompose(mx.second, head, u);
+	if(f_c != -1)
+		decompose(f_c, u, head);
 
-	for(int v: G[u])
-		if(v != pr && v != mx.second)
-			decompose(v, v, u);
+	for(int v: adj[u])
+		if(v != pr && v != f_c)
+			decompose(v, u, v);
 
 	en[u] = dfs_time;
 }
 
-inline bool upper(int u, int v) { return st[u] <= st[v] && en[v] <= en[u]; }
+inline int upper(int u, int v) { return st[u] <= st[v] && en[v] <= en[u];  }
 
 int lca(int u, int v)
 {
 	if(upper(u, v)) return u;
 	if(upper(v, u)) return v;
 
-	for(int l = lgn; l >= 0; l--)
-		if(!upper(par[u][l], v))
-			u = par[u][l];
+	for(int i = 19; i >= 0; i--)
+		if(!upper(par[u][i], v))
+			u = par[u][i];
 
 	return par[u][0];
 }
 
-void hld_precompute(int _root)
+void hld_precompute(int root)
 {
-	root = _root;
-	lgn = 0; while((1 << lgn) < n) lgn++;
-	dfs_time = 0;
-
 	pre_dfs(root, root);
-	decompose(root, root, root);
+	decompose(1, 1, 1);
 }
 
-node get_path_up(int u, int anc)
+vector<pair<int, int> > get_path_up(int u, int anc)
 {
-	node ret = broken;
+	vector<pair<int, int> > ret;
 	while(st[anc] < st[u])
 	{
-		ret = merge(ret, t.query(max(st[anc] + 1, st[head[u]]), st[u], 1, dfs_time, 0));
+		ret.push_back({max(st[anc] + 1, st[head[u]]), st[u]});
 		u = par[head[u]][0];
 	}
 
 	return ret;
 }
 
+vector<pair<int, int> > get_path(int u, int v)
+{
+	int l = lca(u, v);
+	vector<pair<int, int> > ret = get_path_up(u, l);
+	
+	// if we consider vertices, not edges
+	// ret.push_back({st[l], st[l]});
+
+	vector<pair<int, int> > oth = get_path_up(v, l);
+	reverse(oth.begin(), oth.end());
+	
+	// if the path is directed
+	// for(auto &it: oth) swap(it.first, it.second);
+	
+	for(auto it: oth) ret.push_back(it);
+
+	return ret;
+}
+
 void solve()
 {
-	hld_precompute(1);
-	t.init(1, dfs_time, 0);
-
 
 }
 

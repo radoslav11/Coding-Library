@@ -25,9 +25,9 @@ int par[MAXN][MAXLOG], vertex[MAXN];
 
 void dfs_lca(int u, int de = 0)
 {
-    d[u] = de;
+	d[u] = de;
 	st[u] = ++dfs_time;
-    vertex[dfs_time] = u;
+	vertex[dfs_time] = u;
 	for(int i = 1; i < MAXLOG; i++)
 		par[u][i] = par[par[u][i - 1]][i - 1];
 
@@ -59,7 +59,7 @@ int lca(int u, int v)
 void lca_precompute(int root)
 {
 	for(int i = 0; i < MAXLOG; i++)
-        par[root][i] = root;
+		par[root][i] = root;
 
 	dfs_time = 0;
 	dfs_lca(root);
@@ -72,72 +72,62 @@ bool cmp(int u, int v) { return st[u] < st[v]; }
 
 void build_tree(vector<int> vec)
 {
-    if(vec.empty()) { vg[0].clear(); return; }
+	if(vec.empty()) { vg[0].clear(); return; }
 
-    sort(vec.begin(), vec.end(), cmp);
-    vec.erase(unique(vec.begin(), vec.end()), vec.end());
+	sort(vec.begin(), vec.end(), cmp);
+	vec.erase(unique(vec.begin(), vec.end()), vec.end());
 
-    int st_sz = vec.size();
-    for(int i = 0; i + 1 < st_sz; i++)
-        vec.push_back(lca(vec[i], vec[i + 1]));
+	int st_sz = vec.size();
+	for(int i = 0; i + 1 < st_sz; i++)
+		vec.push_back(lca(vec[i], vec[i + 1]));
 
-    sort(vec.begin(), vec.end(), cmp);
-    vec.erase(unique(vec.begin(), vec.end()), vec.end());
+	sort(vec.begin(), vec.end(), cmp);
+	vec.erase(unique(vec.begin(), vec.end()), vec.end());
 
-    for(int vertex: vec)
-        vg[vertex].clear();
+	for(int vertex: vec)
+		vg[vertex].clear();
 
-    msize = 0;
-    mstack[msize++] = vec[0];
+	msize = 0;
+	mstack[msize++] = vec[0];
 
-    for(int i = 1; i < (int)vec.size(); i++)
-    {
-        int anc = lca(mstack[msize - 1], vec[i]);
-        if(anc != mstack[msize - 1])
-        {
-            while(msize > 1 && d[mstack[msize - 2]] >= d[anc])
-            {
-                vg[mstack[msize - 2]].push_back(mstack[msize - 1]);
-                msize--;
-            }
+	for(int i = 1; i < (int)vec.size(); i++)
+	{
+		while(!upper(mstack[msize - 1], vec[i]))
+		{
+			vg[mstack[msize - 2]].push_back(mstack[msize - 1]);
+			msize--;    
+		}
+		
+		mstack[msize++] = vec[i];
+	}
 
-            if(anc != mstack[msize - 1])
-            {
-                vg[anc].push_back(mstack[msize - 1]);
-                msize--; mstack[msize++] = anc;
-            }
-        }
-
-        mstack[msize++] = vec[i];
-    }
-
-    for(int i = 0; i < msize - 1; i++)
-        vg[mstack[i]].push_back(mstack[i + 1]);
-    vg[0].clear(); vg[0].push_back(mstack[0]);
+	for(int i = 0; i < msize - 1; i++)
+		vg[mstack[i]].push_back(mstack[i + 1]);
+	vg[0].clear(); vg[0].push_back(mstack[0]);
 }
 
 void solve()
 {
-    d[0] = -1;
+	d[0] = -1;
 	lca_precompute(1);
 
 	int q;
 	cin >> q;
-    for(int i = 0; i < q; i++)
-    {
-        int x, xx;
-        cin >> x;
-        vector<int> vec;
+	for(int i = 0; i < q; i++)
+	{
+		int x, xx;
+		cin >> x;
+		vector<int> vec;
 
-        for(int i = 0; i < x; i++)
-        {
-            cin >> xx;
-            vec.push_back(xx);
-        }
+		for(int i = 0; i < x; i++)
+		{
+			cin >> xx;
+			vec.push_back(xx);
+		}
 
-        /// has pseudo root 0
-        build_tree(vec);
-    }
+		/// has pseudo root 0
+		build_tree(vec);
+	}
 }
 
 int main()

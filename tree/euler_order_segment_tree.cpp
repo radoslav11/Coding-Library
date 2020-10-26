@@ -65,6 +65,7 @@ struct segment_tree {
 	node merge(node a, node b) {
 		node ret;
 		ret.l = max(a.l, b.l);
+		ret.m = max(a.m, b.m);
 		ret.r = max(a.r, b.r);
 		ret.lm = max(a.lm, b.lm);
 		ret.mr = max(a.mr, b.mr);

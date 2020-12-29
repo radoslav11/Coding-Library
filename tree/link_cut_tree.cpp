@@ -1,9 +1,6 @@
 #include <bits/stdc++.h>
 #define endl '\n'
 
-//#pragma GCC optimize ("O3")
-//#pragma GCC target ("sse4")
-
 using namespace std;
 template<class T, class T2> inline int chkmax(T &x, const T2 &y) { return x < y ? x = y, 1 : 0; }
 template<class T, class T2> inline int chkmin(T &x, const T2 &y) { return x > y ? x = y, 1 : 0; }
@@ -12,20 +9,18 @@ const int MAXN = (1 << 20);
 random_device rd;
 mt19937_64 mt(rd());
 
-struct node
-{
+struct node {
 	int sz, prior, id, rev;
 	node *par, *pp, *l, *r;
-	node() { id = 0; sz = 0; rev = 0; prior = 0; par = nullptr; l = nullptr; r = nullptr; }
-	node(int v) { id = v; sz = 1; rev = 0; prior = mt(); l = nullptr; r = nullptr; }
+	node() { id = 0; sz = 0; rev = 0; prior = 0; par = nullptr; l = nullptr; r = nullptr; pp = nullptr; } 
+	node(int v) { id = v; sz = 1; rev = 0; prior = mt(); l = nullptr; r = nullptr; par = nullptr; pp = nullptr; }
 };
 
 typedef node* pnode;
 
-inline int size(pnode v) { return v ? v->sz : 0; }
+int size(pnode v) { return v ? v->sz : 0; }
 
-void push(pnode &t)
-{
+void push(pnode &t) {
 	if(!t) return;
 	if(t->rev)
 	{
@@ -36,8 +31,7 @@ void push(pnode &t)
 	}
 }
 
-void pull(pnode &v) 
-{ 
+void pull(pnode &v)  { 
 	if(!v) return;
 	
 	push(v->l);
@@ -53,8 +47,7 @@ void pull(pnode &v)
 	if(v->r && v->r->pp) v->pp = v->r->pp, v->r->pp = nullptr;
 }
 
-void merge(pnode &t, pnode l, pnode r)
-{
+void merge(pnode &t, pnode l, pnode r) {
 	push(l), push(r);
 	if(!l) { t = r; return; }
 	if(!r) { t = l; return; }
@@ -67,8 +60,7 @@ void merge(pnode &t, pnode l, pnode r)
 	pull(t);
 }
 
-void split(pnode t, pnode &l, pnode &r, int k, int add = 0)
-{
+void split(pnode t, pnode &l, pnode &r, int k, int add = 0) {
 	push(t);
 	if(!t) { l = nullptr; r = nullptr; return; }
 
@@ -83,14 +75,12 @@ void split(pnode t, pnode &l, pnode &r, int k, int add = 0)
 
 pnode get_root(pnode t) { if(!t) return nullptr; while(t->par) t = t->par; return t; }
 
-pnode remove_right(pnode t)
-{
+pnode remove_right(pnode t) {
 	pnode rt = t;
 
 	int pos = size(rt->l);
 	if(rt->rev) pos = size(rt) - pos - 1;
-	while(rt->par)
-	{
+	while(rt->par) {
 		if(rt->par->r == rt) pos += size(rt->par->l) + 1;
 		if(rt->par->rev) pos = size(rt->par) - pos - 1;
 		rt = rt->par;
@@ -106,14 +96,12 @@ pnode remove_right(pnode t)
 	return l;
 }
 
-pnode remove_left(pnode t)
-{
+pnode remove_left(pnode t) {
 	pnode rt = t;
 
 	int pos = size(rt->l);
 	if(rt->rev) pos = size(rt) - pos - 1;
-	while(rt->par)
-	{
+	while(rt->par) {
 		if(rt->par->r == rt) pos += size(rt->par->l) + 1;
 		if(rt->par->rev) pos = size(rt->par) - pos - 1;
 		rt = rt->par;
@@ -127,8 +115,7 @@ pnode remove_left(pnode t)
 	return r;
 }
 
-pnode merge_trees(pnode u, pnode t)
-{
+pnode merge_trees(pnode u, pnode t) {
 	u = get_root(u);
 	t = get_root(t);
 	t->pp = nullptr;
@@ -136,15 +123,12 @@ pnode merge_trees(pnode u, pnode t)
 	return u;
 }
 
-struct link_cut_tree
-{
+struct link_cut_tree {
 	pnode ver[MAXN];
 
-	pnode access(pnode t)
-	{
+	pnode access(pnode t) {
 		t = remove_right(t);
-		while(t->pp)
-		{
+		while(t->pp) {
 			pnode u = t->pp;
 			u = remove_right(u);
 			t = merge_trees(u, t);
@@ -153,42 +137,36 @@ struct link_cut_tree
 		return t;
 	}
 
-	pnode find_root(pnode u)
-	{
+	pnode find_root(pnode u) {
 		u = access(u);
 		push(u); while(u->l) u = u->l, push(u);
 		access(u);
 		return u;
 	}
 
-	void make_root(pnode u)
-	{
+	void make_root(pnode u) {
 		u = access(u);
 		u->rev ^= 1;
 		push(u);
 	}
 
-	void link(pnode u, pnode w)
-	{
+	void link(pnode u, pnode w) {
 		make_root(u);
 		access(w);
 		merge_trees(w, u);
 	}
 
-	void cut(pnode p)
-	{
+	void cut(pnode p) {
 		access(p);
 		remove_left(p);
 	}
 
-	int depth(pnode u)
-	{
+	int depth(pnode u) {
 		u = access(u);
 		return size(u);
 	}
 
-	pnode lca(pnode u, pnode v)
-	{
+	pnode lca(pnode u, pnode v) {
 		if(u == v) return u;
 		if(depth(u) > depth(v)) swap(u, v);
 
@@ -210,36 +188,30 @@ struct link_cut_tree
 
 int n, m;
 
-void read()
-{
+void read() {
 	cin >> n >> m;
 }
 
 link_cut_tree lct;
 
-void solve()
-{
+void solve() {
 	lct.init(n);
 
-	while(m--)
-	{
+	while(m--) {
 		string type;
 		cin >> type;
 
-		if(type == "add")
-		{
+		if(type == "add") {
 			int u, w;
 			cin >> u >> w;
 			lct.link(u, w);
 		}
-		else if(type == "conn")
-		{
+		else if(type == "conn") {
 			int u, v;
 			cin >> u >> v;
 			cout << (lct.root(u) == lct.root(v) ? "YES" : "NO") << endl;
 		}
-		else if(type == "rem")
-		{
+		else if(type == "rem") {
 			int u, v;
 			cin >> u >> v;
 			if(lct.depth(u) > lct.depth(v)) swap(u, v);
@@ -249,8 +221,7 @@ void solve()
 	}
 }
 
-int main()
-{
+int main() {
 	ios_base::sync_with_stdio(false);
 	cin.tie(NULL);
 

@@ -7,51 +7,40 @@ const int MAXN = (1 << 18);
 int n, m;
 int a[MAXN];
 
-struct node
-{
-	int sum, lazy;
+struct node {
+	int sum;
 
-	node() {sum = 0; lazy = 0;}
-	node(int val)
-	{
+	node() {sum = 0; }
+	node(int val) {
 		sum = val;
-		lazy = 0;
 	}
 };
 
-node temp, broken;
-
-node merge(node l, node r)
-{
+node merge(node l, node r) {
+	node temp;
 	temp.sum = l.sum + r.sum;
-	temp.lazy = 0;
 	return temp;
 }
 
-struct segment_tree
-{
-	node tr[4 * MAXN];
+struct segment_tree {
+	int lazy[MAXN << 2];
+	node tr[MAXN << 2];
 
-	void push(int l, int r, int idx)
-	{
-		if(tr[idx].lazy)
-		{
-			tr[idx].sum += (r - l + 1) * tr[idx].lazy;
+	void push(int l, int r, int idx) {
+		if(lazy[idx]) {
+			tr[idx].sum += (r - l + 1) * lazy[idx];
 
-			if(l != r)
-			{
-				tr[2 * idx + 1].lazy += tr[idx].lazy;
-				tr[2 * idx + 2].lazy += tr[idx].lazy;
+			if(l != r) {
+				lazy[2 * idx + 1] += lazy[idx];
+				lazy[2 * idx + 2] += lazy[idx];
 			}
 
-			tr[idx].lazy = 0;
+			lazy[idx] = 0;
 		}
 	}
 
-	void init(int l, int r, int idx)
-	{
-		if(l == r)
-		{
+	void init(int l, int r, int idx) {
+		if(l == r) {
 			tr[idx] = node(a[l]);
 			return;
 		}
@@ -63,16 +52,15 @@ struct segment_tree
 		tr[idx] = merge(tr[2 * idx + 1], tr[2 * idx + 2]);
 	}
 
-	void update(int qL, int qR, int val, int l, int r, int idx)
-	{
+	void update(int qL, int qR, int val, int l, int r, int idx) {
 		push(l, r, idx);
 
-		if(qL > r || l > qR)
+		if(qL > r || l > qR) {
 			return;
+		}
 
-		if(qL <= l && r <= qR)
-		{
-			tr[idx].lazy += val;
+		if(qL <= l && r <= qR) {
+			lazy[idx] += val;
 			push(l, r, idx);
 			return;
 		}
@@ -84,15 +72,16 @@ struct segment_tree
 		tr[idx] = merge(tr[2 * idx + 1], tr[2 * idx + 2]);
 	}
 
-	node query(int qL, int qR, int l, int r, int idx)
-	{
+	node query(int qL, int qR, int l, int r, int idx) {
 		push(l, r, idx);
 
-		if(l > qR || r < qL)
-			return broken;
+		if(l > qR || r < qL) {
+			return node();
+		}
 
-		if(qL <= l && r <= qR)
+		if(qL <= l && r <= qR) {
 			return tr[idx];
+		}
 
 		int mid = (l + r) >> 1;
 		return merge(query(qL, qR, l, mid, 2 * idx + 1), query(qL, qR, mid + 1, r, 2 * idx + 2));

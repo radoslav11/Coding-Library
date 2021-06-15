@@ -15,8 +15,8 @@ const int MAXN = (1 << 20);
 template<typename T>
 struct slope_trick {
 	T offset_l, offset_r, zero_height;
-	multiset<T> L;
-	multiset<T> R;
+	priority_queue<T> L;
+	priority_queue<T, vector<T>, greater<T>> R;
 
 	slope_trick() {
 		offset_l = 0;
@@ -28,7 +28,7 @@ struct slope_trick {
 		if(L.empty()) {
 			return numeric_limits<T>::min();
 		} else {
-			return *L.rbegin() + offset_l;
+			return L.top() + offset_l;
 		}
 	}
 
@@ -36,32 +36,28 @@ struct slope_trick {
 		if(R.empty()) {
 			return numeric_limits<T>::max();
 		} else {
-			return *R.begin() + offset_r;
+			return R.top() + offset_r;
 		} 
 	}
 
-	inline size_t size() {
-		return L.size() + R.size();
-	}
-	
 	/* Add the function f(x) = height + |x - center| to the current slope trick. */
 	void add_simple(const T &center, const T &height = 0) {
 		T s = zero_start(), e = zero_end();
 		zero_height += height;
 		if(s <= center && center <= e) {
-			L.insert(center - offset_l);
-			R.insert(center - offset_r);
+			L.push(center - offset_l);
+			R.push(center - offset_r);
 		} else if(center < s) {
-			L.insert(center - offset_l);
-			L.insert(center - offset_l);
-			L.erase(prev(L.end()));
-			R.insert(s - offset_r);					
+			L.push(center - offset_l);
+			L.push(center - offset_l);
+			L.pop();
+			R.push(s - offset_r);					
 			zero_height += abs(center - s);	
 		} else {
-			R.insert(center - offset_r);
-			R.insert(center - offset_r);
-			R.erase(R.begin());	
-			L.insert(e - offset_l);
+			R.push(center - offset_r);
+			R.push(center - offset_r);
+			R.pop();	
+			L.push(e - offset_l);
 			zero_height += abs(center - e);	
 		}
 	}
@@ -69,13 +65,17 @@ struct slope_trick {
 	/* Update the current slope trick to its prefix minimum - i.e. f'(x) = min f(x') for all x' <= x.  */ 
 	void prefix_min() {
 		offset_r = 0;
-		R.clear();
+		while(!R.empty()) {
+			R.pop();
+		}
 	}
 
 	/* Update the current slope trick to its prefix minimum - i.e. f'(x) = min f(x') for all x' >= x.  */ 
 	void suffix_min() {
 		offset_l = 0;
-		L.clear();
+		while(!L.empty()) {
+			L.pop();
+		}
 	}
 
 	/* Update the current slope trick to its local minimum - i.e. f'(x) = min f(x') for all x - strip_width <= x' <= x + strip_width.  */ 
@@ -87,14 +87,6 @@ struct slope_trick {
 		if(!R.empty()) {
 			offset_r += strip_width;
 		}
-	}
-
-	void add(const slope_trick &other) {
-		// TODO: Add arbitrary slope trick.
-	}
-
-	void add_with_destroy(slope_trick &other) {
-		// TODO: Add using small to large.
 	}
 };
 

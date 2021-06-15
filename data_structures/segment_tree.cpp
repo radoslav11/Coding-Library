@@ -7,33 +7,25 @@ const int MAXN = (1 << 18);
 int n, m;
 int a[MAXN];
 
-struct node
-{
+struct node {
 	int sum;
-
-	node() {sum = 0;}
-	node(int val)
-	{
+	node() { sum = 0; }
+	node(int val) {
 		sum = val;
 	}
 };
 
-node temp, broken;
-
-node merge(node l, node r)
-{
+node merge(node l, node r) {
+	node temp;
 	temp.sum = l.sum + r.sum;
 	return temp;
 }
 
-struct segment_tree
-{
-	node tr[4 * MAXN];
+struct segment_tree {
+	node tr[MAXN << 2];
 
-	void init(int l, int r, int idx)
-	{
-		if(l == r)
-		{
+	void init(int l, int r, int idx) {
+		if(l == r) {
 			tr[idx] = node(a[l]);
 			return;
 		}
@@ -45,13 +37,11 @@ struct segment_tree
 		tr[idx] = merge(tr[2 * idx + 1], tr[2 * idx + 2]);
 	}
 
-	void update(int pos, int val, int l, int r, int idx)
-	{
+	void update(int pos, int val, int l, int r, int idx) {
 		if(l > pos || r < pos)
 			return;
 
-		if(l == r && l == pos)
-		{
+		if(l == r && l == pos) {
 			tr[idx].sum += val;
 			return;
 		}
@@ -63,13 +53,14 @@ struct segment_tree
 		tr[idx] = merge(tr[2 * idx + 1], tr[2 * idx + 2]);
 	}
 
-	node query(int qL, int qR, int l, int r, int idx)
-	{
-		if(l > qR || r < qL)
-			return broken;
+	node query(int qL, int qR, int l, int r, int idx) {
+		if(l > qR || r < qL) {
+			return node();
+		}
 
-		if(qL <= l && r <= qR)
+		if(qL <= l && r <= qR) {
 			return tr[idx];
+		}
 
 		int mid = (l + r) >> 1;
 		return merge(query(qL, qR, l, mid, 2 * idx + 1), query(qL, qR, mid + 1, r, 2 * idx + 2));

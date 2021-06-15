@@ -11,11 +11,9 @@ const int MAXN = (1 << 20);
 const int mod = (int)1e9 + 7;
 
 template<class T>
-T pw(T a, int pw)
-{
+T pw(T a, int pw) {
 	T ret(1);
-	while(pw)
-	{
+	while(pw) {
 		if(pw & 1) ret *= a; 
 		a *= a;
 		pw >>= 1;
@@ -25,8 +23,7 @@ T pw(T a, int pw)
 }
 
 template<unsigned mod>
-class Modint 
-{
+class Modint  {
 	private:
 		unsigned x;
 	
@@ -67,16 +64,14 @@ class Modint
 
 Modint<mod> fact[MAXN], ifact[MAXN];
 
-void precompute()
-{
+void precompute() {
 	fact[0] = 1;
 	for(int i = 1; i < MAXN; i++) fact[i] = fact[i - 1] * i;
 	ifact[MAXN - 1] = fact[MAXN - 1].inv();
 	for(int i = MAXN - 2; i >= 0; i--) ifact[i] = ifact[i + 1] * (i + 1);
 }
 
-Modint<mod> C(int n, int k) 
-{  
+Modint<mod> C(int n, int k) {  
 	if(n < k || n < 0 || k < 0) return Modint<mod>(0);
 	return fact[n] * ifact[n - k] * ifact[k];
 } 

@@ -61,7 +61,7 @@ struct slope_trick {
 			R.insert(center - offset_r);
 			R.insert(center - offset_r);
 			R.erase(R.begin());	
-			L.insert(e - offset_r);
+			L.insert(e - offset_l);
 			zero_height += abs(center - e);	
 		}
 	}

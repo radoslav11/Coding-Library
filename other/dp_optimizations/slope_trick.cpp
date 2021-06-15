@@ -52,14 +52,14 @@ struct slope_trick {
 			L.insert(center - offset_l);
 			R.insert(center - offset_r);
 		} else if(center < s) {
-			L.insert(center);
-			L.insert(center);
+			L.insert(center - offset_l);
+			L.insert(center - offset_l);
 			L.erase(prev(L.end()));
 			R.insert(s - offset_r);					
 			zero_height += abs(center - s);	
 		} else {
-			R.insert(center);
-			R.insert(center);
+			R.insert(center - offset_r);
+			R.insert(center - offset_r);
 			R.erase(R.begin());	
 			L.insert(e - offset_r);
 			zero_height += abs(center - e);	

@@ -1,142 +1,146 @@
 #include <bits/stdc++.h>
-#define endl '\n'
 
 using namespace std;
-const int MAXN = (1 << 20);
 const int MAXLOG = 20;
 
 int n;
-vector<int> G[MAXN];
+vector<vector<int>> adj;
 
-void read()
-{
-	cin >> n;
-	for(int i = 0; i < n - 1; i++)
-	{
-		int u, v;
-		cin >> u >> v;
-		G[u].push_back(v);
-		G[v].push_back(u);
-	}
+void read() {
+    cin >> n;
+    adj.assign(n + 1, {});
+    for(int i = 0; i < n - 1; i++) {
+        int u, v;
+        cin >> u >> v;
+        adj[u].push_back(v);
+        adj[v].push_back(u);
+    }
 }
 
-int d[MAXN], st[MAXN], en[MAXN], dfs_time = 0;
-int par[MAXN][MAXLOG], vertex[MAXN];
+vector<int> in_time, out_time;
+vector<vector<int>> par_up;
 
-void dfs_lca(int u, int de = 0)
-{
-	d[u] = de;
-	st[u] = ++dfs_time;
-	vertex[dfs_time] = u;
-	for(int i = 1; i < MAXLOG; i++)
-		par[u][i] = par[par[u][i - 1]][i - 1];
+void dfs_lca(int u, int pr, int &dfs_time) {
+    in_time[u] = ++dfs_time;
 
-	for(int v: G[u])
-		if(v != par[u][0])
-		{
-			par[v][0] = u;
-			dfs_lca(v, de + 1);
-		}
+    par_up[u].resize(MAXLOG);
+    par_up[u][0] = pr;
+    for(int i = 1; i < MAXLOG; i++) {
+        par_up[u][i] = par_up[par_up[u][i - 1]][i - 1];
+    }
 
-	en[u] = dfs_time;
+    for(int v: adj[u]) {
+        if(v != pr) {
+            dfs_lca(v, u, dfs_time);
+        }
+    }
+
+    out_time[u] = dfs_time;
 }
 
-inline bool upper(int u, int v) { return st[u] <= st[v] && en[v] <= en[u]; }
-
-int lca(int u, int v)
-{
-	if(upper(u, v)) return u;
-	if(upper(v, u)) return v;
-
-	int a = u;
-	for(int i = MAXLOG - 1; i >= 0; i--)
-		if(!upper(par[a][i], v))
-			a = par[a][i];
-
-	return par[a][0];
+inline bool upper(int u, int v) {
+    return in_time[u] <= in_time[v] && out_time[v] <= out_time[u];
 }
 
-void lca_precompute(int root)
-{
-	for(int i = 0; i < MAXLOG; i++)
-		par[root][i] = root;
+int lca(int u, int v) {
+    if(upper(u, v)) {
+        return u;
+    }
+    if(upper(v, u)) {
+        return v;
+    }
 
-	dfs_time = 0;
-	dfs_lca(root);
+    int a = u;
+    for(int i = MAXLOG - 1; i >= 0; i--) {
+        if(!upper(par_up[a][i], v)) {
+            a = par_up[a][i];
+        }
+    }
+
+    return par_up[a][0];
 }
 
-vector<int> vg[MAXN];
-int mstack[MAXN], msize;
-
-bool cmp(int u, int v) { return st[u] < st[v]; }
-
-void build_tree(vector<int> vec)
-{
-	if(vec.empty()) { vg[0].clear(); return; }
-
-	sort(vec.begin(), vec.end(), cmp);
-	vec.erase(unique(vec.begin(), vec.end()), vec.end());
-
-	int st_sz = vec.size();
-	for(int i = 0; i + 1 < st_sz; i++)
-		vec.push_back(lca(vec[i], vec[i + 1]));
-
-	sort(vec.begin(), vec.end(), cmp);
-	vec.erase(unique(vec.begin(), vec.end()), vec.end());
-
-	for(int vertex: vec)
-		vg[vertex].clear();
-
-	msize = 0;
-	mstack[msize++] = vec[0];
-
-	for(int i = 1; i < (int)vec.size(); i++)
-	{
-		while(!upper(mstack[msize - 1], vec[i]))
-		{
-			vg[mstack[msize - 2]].push_back(mstack[msize - 1]);
-			msize--;    
-		}
-		
-		mstack[msize++] = vec[i];
-	}
-
-	for(int i = 0; i < msize - 1; i++)
-		vg[mstack[i]].push_back(mstack[i + 1]);
-	vg[0].clear(); vg[0].push_back(mstack[0]);
+void lca_precompute(int root) {
+    int dfs_time = 0;
+    in_time.resize(n + 1);
+    out_time.resize(n + 1);
+    par_up.resize(n + 1);
+    dfs_lca(root, root, dfs_time);
 }
 
-void solve()
-{
-	d[0] = -1;
-	lca_precompute(1);
+vector<vector<int>> vg;
 
-	int q;
-	cin >> q;
-	for(int i = 0; i < q; i++)
-	{
-		int x, xx;
-		cin >> x;
-		vector<int> vec;
+int build_tree(vector<int> vec) {
+    if(vec.empty()) {
+        return -1;
+    }
 
-		for(int i = 0; i < x; i++)
-		{
-			cin >> xx;
-			vec.push_back(xx);
-		}
+    function<bool(int, int)> cmp = [&](int u, int v) {
+        return in_time[u] < in_time[v];
+    };
+    function<void(stack<int> &)> propagate_stack = [&](stack<int> &mstack) {
+        int prev_top = mstack.top();
+        mstack.pop();
+        vg[mstack.top()].push_back(prev_top);
+    };
 
-		/// has pseudo root 0
-		build_tree(vec);
-	}
+    sort(vec.begin(), vec.end(), cmp);
+    vec.erase(unique(vec.begin(), vec.end()), vec.end());
+
+    for(int i = (int)vec.size() - 1; i > 0; i--) {
+        vec.push_back(lca(vec[i - 1], vec[i]));
+    }
+
+    sort(vec.begin(), vec.end(), cmp);
+    vec.erase(unique(vec.begin(), vec.end()), vec.end());
+
+    for(int vertex: vec) {
+        vg[vertex].clear();
+    }
+
+    stack<int> mstack;
+    mstack.push(vec[0]);
+
+    for(int i = 1; i < (int)vec.size(); i++) {
+        while(!upper(mstack.top(), vec[i])) {
+            propagate_stack(mstack);
+        }
+
+        mstack.push(vec[i]);
+    }
+
+    while(mstack.size() > 1) {
+        propagate_stack(mstack);
+    }
+
+    return mstack.top();
 }
 
-int main()
-{
-	ios_base::sync_with_stdio(false);
-	cin.tie(NULL);
+void solve() {
+    lca_precompute(1);
+    vg.assign(n + 1, {});
 
-	read();
-	solve();
-	return 0;
+    int q;
+    cin >> q;
+    for(int i = 0; i < q; i++) {
+        int x, xx;
+        cin >> x;
+        vector<int> vec;
+
+        for(int i = 0; i < x; i++) {
+            cin >> xx;
+            vec.push_back(xx);
+        }
+
+        int root = build_tree(vec);
+    }
 }
 
+int main() {
+    ios_base::sync_with_stdio(false);
+    cin.tie(NULL);
+
+    read();
+    solve();
+    return 0;
+}

@@ -1,74 +1,93 @@
 #include <bits/stdc++.h>
-#define endl '\n'
 
 using namespace std;
-const int MAXN = (1 << 20);
-const int MAXLOG = 64;
 
-struct basis
-{
-    int64_t base[MAXLOG];
+template<class T>
+struct basis {
+    int max_log;
+    vector<T> base;
 
-    void clear()
-    {
-		for(int i = MAXLOG - 1; i >= 0; i--)
-			base[i] = 0;
+    void init(int _max_log) {
+        max_log = _max_log;
+        base.assign(max_log, 0);
     }
 
-    void add(int64_t val)
-    {
-    	for(int i = MAXLOG - 1; i >= 0; i--)
-			if((val >> i) & 1)
-			{
-				if(!base[i]) { base[i] = val; return; }
-				else val ^= base[i];
-			}
-	}
-
-    inline int size()
-    {
-    	int sz = 0;
-    	for(int i = 0; i < MAXLOG; i++)
-			sz += (bool)(base[i]);
-		return sz;
+    void add(T val) {
+        for(int i = max_log - 1; i >= 0; i--) {
+            if((val >> i) & 1) {
+                if(!base[i]) {
+                    base[i] = val;
+                    return;
+                } else {
+                    val ^= base[i];
+                }
+            }
+        }
     }
 
-    int64_t max_xor()
-    {
-		int64_t res = 0;
-		for(int i = MAXLOG - 1; i >= 0; i--)
-			if(!((res >> i) & 1) && base[i])
-				res ^= base[i];
+    inline int size() {
+        int sz = 0;
+        for(int i = 0; i < max_log; i++) {
+            sz += (bool)(base[i]);
+        }
+        return sz;
+    }
 
-		return res;
-	}
+    T max_xor() {
+        T res = 0;
+        for(int i = max_log - 1; i >= 0; i--) {
+            if(!((res >> i) & 1) && base[i]) {
+                res ^= base[i];
+            }
+        }
 
-    bool can_create(int64_t val)
-    {
-		for(int i = MAXLOG - 1; i >= 0; i--)
-			if(((val >> i) & 1) && base[i])
-				val ^= base[i];
+        return res;
+    }
 
-		return (val == 0);
+    bool can_create(T val) {
+        for(int i = max_log - 1; i >= 0; i--) {
+            if(((val >> i) & 1) && base[i]) {
+                val ^= base[i];
+            }
+        }
+
+        return (val == 0);
+    }
+
+    vector<T> get_basis() {
+        vector<T> res;
+        for(int i = 0; i < max_log; i++) {
+            if(base[i]) {
+                res.push_back(base[i]);
+            }
+        }
+        return res;
+    }
+    
+    basis<T> merge(basis<T> other) {
+        if(max_log < other.max_log) {
+            return other.merge(*this);
+        }
+
+        basis<T> res = *this;
+        for(auto x: other.base) {
+            if(x) {
+                res.add(x);
+            }
+        }
+        return res;
     }
 };
 
-void read()
-{
+void read() {}
 
-}
+void solve() {}
 
-void solve()
-{
+int main() {
+    ios_base::sync_with_stdio(false);
+    cin.tie(NULL);
 
-}
-
-int main()
-{
-	ios_base::sync_with_stdio(false);
-	cin.tie(NULL);
-
-	read();
-	solve();
-	return 0;
+    read();
+    solve();
+    return 0;
 }

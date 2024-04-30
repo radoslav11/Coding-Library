@@ -1,8 +1,5 @@
 #include <bits/stdc++.h>
-#define endl '\n'
-
 using namespace std;
-const int MAXN = (1 << 20);
 
 template<class FlowT>
 struct max_flow {
@@ -12,22 +9,32 @@ struct max_flow {
     struct edge {
         FlowT flow, cap;
         int idx, rev, to;
-        edge() { flow = 0; cap = 0; rev = 0; idx = 0; to = 0; }
+        edge() {
+            flow = 0;
+            cap = 0;
+            rev = 0;
+            idx = 0;
+            to = 0;
+        }
         edge(int _to, int _rev, FlowT _flow, FlowT _cap, int _idx) {
-            to = _to; rev = _rev;
-            flow = _flow; cap = _cap;
+            to = _to;
+            rev = _rev;
+            flow = _flow;
+            cap = _cap;
             idx = _idx;
         }
     };
 
-    vector<edge> G[MAXN];
-    int n, dist[MAXN], po[MAXN];
+    vector<vector<edge>> G;
+    vector<int> dist, po;
+    int n;
 
     bool bfs(int s, int t) {
         dist[s] = -1, po[s] = 0;
         dist[t] = -1, po[t] = 0;
-        for(int v = 0; v <= n; v++)
+        for(int v = 0; v < n; v++) {
             dist[v] = -1, po[v] = 0;
+        }
 
         queue<int> Q;
         Q.push(s);
@@ -37,19 +44,21 @@ struct max_flow {
             int u = Q.front();
             Q.pop();
 
-            for(edge e: G[u])
+            for(edge e: G[u]) {
                 if(dist[e.to] == -1 && e.flow < e.cap) {
                     dist[e.to] = dist[u] + 1;
                     Q.push(e.to);
                 }
+            }
         }
 
         return dist[t] != -1;
     }
 
     FlowT dfs(int u, int t, FlowT fl = finf) {
-        if(u == t)
+        if(u == t) {
             return fl;
+        }
 
         for(; po[u] < G[u].size(); po[u]++) {
             auto &e = G[u][po[u]];
@@ -57,15 +66,21 @@ struct max_flow {
                 FlowT f = dfs(e.to, t, min(fl, e.cap - e.flow));
                 e.flow += f;
                 G[e.to][e.rev].flow -= f;
-                if(f > 0)
+                if(f > 0) {
                     return f;
+                }
             }
         }
 
         return 0;
     }
 
-    void init(int _n) { n = _n; for(int i = 0; i <= n; i++) G[i].clear(); }
+    void init(int _n) {
+        n = _n;
+        G.assign(n + 1, {});
+        dist.resize(n + 1);
+        po.resize(n + 1);
+    }
 
     void add_edge(int u, int v, FlowT w, int idx = -1) {
         G[u].push_back(edge(v, G[v].size(), 0, w, idx));
@@ -73,32 +88,29 @@ struct max_flow {
     }
 
     FlowT flow(int s, int t) {
-        if(s == t) return finf;
+        if(s == t) {
+            return finf;
+        }
         FlowT ret = 0, to_add;
-        while(bfs(s, t))
-            while((to_add = dfs(s, t)))
+        while(bfs(s, t)) {
+            while((to_add = dfs(s, t))) {
                 ret += to_add;
+            }
+        }
 
         return ret;
     }
 };
 
-void read()
-{
+void read() {}
 
-}
+void solve() {}
 
-void solve()
-{
+int main() {
+    ios_base::sync_with_stdio(false);
+    cin.tie(NULL);
 
-}
-
-int main()
-{
-	ios_base::sync_with_stdio(false);
-	cin.tie(NULL);
-
-	read();
-	solve();
-	return 0;
+    read();
+    solve();
+    return 0;
 }

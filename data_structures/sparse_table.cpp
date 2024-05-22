@@ -2,56 +2,68 @@
 #define endl '\n'
 
 using namespace std;
-template<class T, class T2> inline void chkmax(T &x, const T2 &y) { if(x < y) x = y; }
-template<class T, class T2> inline void chkmin(T &x, const T2 &y) { if(x > y) x = y; }
-const int MAXN = (1 << 20);
-const int MAXLOG = 20;
+template<class T, class T2>
+inline void chkmax(T &x, const T2 &y) {
+    if(x < y) {
+        x = y;
+    }
+}
+template<class T, class T2>
+inline void chkmin(T &x, const T2 &y) {
+    if(x > y) {
+        x = y;
+    }
+}
 
-template<class T>
-struct sparse_table {
-	T dp[MAXN][MAXLOG];
-	int prec_lg2[MAXN], n;
+template<class T, T (*merge)(T, T)>
+class sparse_table {
+  private:
+    int n;
+    vector<vector<T>> dp;
+    vector<int> prec_lg2;
 
-	sparse_table() { 
-		memset(dp, 0, sizeof(dp)); 
-		memset(prec_lg2, 0, sizeof(prec_lg2)); 
-		n = 0; 
-	}
+  public:
+    sparse_table() {
+        n = 0;
+        dp.clear();
+        prec_lg2.clear();
+    }
 
-	void init(const vector<T> &a) {
-		n = a.size();
-		for(int i = 2; i < 2 * n; i++) prec_lg2[i] = prec_lg2[i >> 1] + 1;
-		for(int i = 0; i < n; i++) dp[i][0] = a[i];
-		for(int j = 1; (1 << j) <= n; j++) {    
-			for(int i = 0; i < n; i++) {
-				dp[i][j] = min(dp[i][j - 1], dp[i + (1 << (j - 1))][j - 1]);
-			}
-		}
-	}
+    void init(const vector<T> &a) {
+        n = a.size();
+        prec_lg2.resize(n + 1);
+        for(int i = 2; i <= n; i++) {
+            prec_lg2[i] = prec_lg2[i >> 1] + 1;
+        }
 
-	T query(int l, int r) {
-		int k = prec_lg2[r - l + 1];
-		return min(dp[l][k], dp[r - (1 << k) + 1][k]);
-	}
+        dp.assign(prec_lg2[n] + 1, vector<T>(n));
+        dp[0] = a;
+
+        for(int j = 1; (1 << j) <= n; j++) {
+            for(int i = 0; i + (1 << j) < n; i++) {
+                dp[j][i] = merge(dp[j - 1][i], dp[j - 1][i + (1 << (j - 1))]);
+            }
+        }
+    }
+
+    T query(int l, int r) {
+        int k = prec_lg2[r - l + 1];
+        return merge(dp[k][l], dp[k][r - (1 << k) + 1]);
+    }
 };
 
-void read()
-{
+int min_custom(int a, int b) { return min(a, b); }
+sparse_table<int, min_custom> st;
 
+void read() {}
+
+void solve() {}
+
+int main() {
+    ios_base::sync_with_stdio(false);
+    cin.tie(NULL);
+
+    read();
+    solve();
+    return 0;
 }
-
-void solve()
-{
-
-}
-
-int main()
-{
-	ios_base::sync_with_stdio(false);
-	cin.tie(NULL);
-
-	read();
-	solve();
-	return 0;
-}
-

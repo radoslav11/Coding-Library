@@ -1,0 +1,93 @@
+#include <bits/stdc++.h>
+#include "date_structures/fenwick_range_update.cpp"
+using namespace std;
+
+class vertex_add_path_sum {
+  private:
+    int max_log;
+    fenwick_range_update<int> ft;
+    vector<vector<int>> par_up;
+
+    void dfs_lca(int u, int pr, int &dfs_time) {
+        in_time[u] = ++dfs_time;
+        par_up[u][0] = pr;
+        for(int i = 1; i < max_log; i++) {
+            par_up[u][i] = par_up[par_up[u][i - 1]][i - 1];
+        }
+
+        for(int v: adj[u]) {
+            if(v != pr) {
+                dfs_lca(v, u, dfs_time);
+            }
+        }
+
+        out_time[u] = ++dfs_time;
+    }
+
+  public:
+    int n;
+    vector<int> in_time, out_time;
+    vector<vector<int>> adj;
+
+    vertex_add_path_sum() {}
+
+    void init(int _n) {
+        n = _n;
+        adj.assign(n + 1, {});
+    }
+
+    void add_edge(int u, int v) {
+        adj[u].push_back(v);
+        adj[v].push_back(u);
+    }
+
+    void prepare() {
+        max_log = 1;
+        while((1 << max_log) <= n) {
+            max_log++;
+        }
+
+        par_up.assign(n + 1, vector<int>(max_log));
+
+        int dfs_time = 0;
+        in_time.resize(n + 1);
+        out_time.resize(n + 1);
+        dfs_lca(1, 1, dfs_time);
+        ft.init(dfs_time);
+    }
+
+    int query(int u, int v) {
+        int l = lca(u, v);
+        int ans =
+            ft.query(in_time[u]) + ft.query(in_time[v]) - ft.query(in_time[l]);
+        if(par_up[l][0] != l) {
+            ans -= ft.query(in_time[par_up[l][0]]);
+        }
+
+        return ans;
+    }
+
+    void update(int u, int x) { ft.update(in_time[u], out_time[u], x); }
+
+    int lca(int u, int v) {
+        if(upper(u, v)) {
+            return u;
+        }
+        if(upper(v, u)) {
+            return v;
+        }
+
+        int a = u;
+        for(int i = max_log - 1; i >= 0; i--) {
+            if(!upper(par_up[a][i], v)) {
+                a = par_up[a][i];
+            }
+        }
+
+        return par_up[a][0];
+    }
+
+    inline bool upper(int u, int v) {
+        return in_time[u] <= in_time[v] && out_time[v] <= out_time[u];
+    }
+};

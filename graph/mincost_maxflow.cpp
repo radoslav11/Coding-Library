@@ -1,138 +1,132 @@
 #include <bits/stdc++.h>
-#define endl '\n'
 
-using namespace std;
-const int MAXN = (1 << 10);
-const int inf = (int)1e9 + 42;
+const int INFi = 1e9;
+const int64_t INF = 2e18;
 
-int read_int();
+// From a submission by Ormlis, with tiny edits
+// that I like.
 
-struct edge {
-    int to, rev, flow, cap, cost;
-    edge() {
-        to = 0;
-        rev = 0;
-        flow = 0;
-        cap = 0;
-        cost = 0;
+template<typename T>
+struct min_cost_flow {
+    struct edge {
+        int to, rev;
+        T capacity, cost, flow;
+    };
+
+    int n;
+    std::vector<std::vector<edge>> g;
+
+    min_cost_flow(int n = 0) : n(n), g(n) {}
+
+    void init(int _n) {
+        n = _n;
+        g.assign(n, {});
     }
-    edge(int _to, int _rev, int _flow, int _cap, int _cost) {
-        to = _to;
-        rev = _rev;
-        flow = _flow;
-        cap = _cap;
-        cost = _cost;
+
+    int size() const { return n; }
+
+    int add_edge(int from, int to, T capacity, T cost) {
+        int id = g[from].size();
+        g[from].push_back(
+            {to, int(g[to].size()) + (from == to), capacity, cost, 0}
+        );
+        g[to].push_back({from, id, 0, -cost, 0});
+        return id;
     }
-};
 
-int cnt_nodes = 0, s = MAXN - 1, t = MAXN - 2;
-vector<edge> G[MAXN];
-
-void add_edge(int u, int v, int w, int cost) {
-    edge t = edge(v, G[v].size(), 0, w, cost);
-    edge r = edge(u, G[u].size(), 0, 0, -cost);
-    G[u].push_back(t);
-    G[v].push_back(r);
-}
-
-deque<int> Q;
-bool is_inside[MAXN];
-int dist[MAXN], par_idx[MAXN], par[MAXN];
-
-bool spfa() {
-    for(int i = 0; i <= cnt_nodes; i++) {
-        dist[i] = inf;
-    }
-    dist[t] = inf;
-
-    Q.clear();
-    dist[s] = 0;
-    is_inside[s] = true;
-    Q.push_back(s);
-
-    while(!Q.empty()) {
-        int u = Q.front();
-        is_inside[u] = false;
-        Q.pop_front();
-
-        for(int i = 0; i < (int)G[u].size(); i++) {
-            if(G[u][i].cap > G[u][i].flow &&
-               dist[u] + G[u][i].cost < dist[G[u][i].to]) {
-                dist[G[u][i].to] = dist[u] + G[u][i].cost;
-                par_idx[G[u][i].to] = i;
-                par[G[u][i].to] = u;
-
-                if(is_inside[G[u][i].to]) {
-                    continue;
-                }
-                if(!Q.empty() && dist[G[u][i].to] > dist[Q.front()]) {
-                    Q.push_back(G[u][i].to);
-                } else {
-                    Q.push_front(G[u][i].to);
-                }
-
-                is_inside[G[u][i].to] = true;
+    std::pair<T, T> flow(
+        int source, int sink, T flow_limit = std::numeric_limits<T>::max()
+    ) {
+        for(int v = 0; v < n; v++) {
+            for(edge &e: g[v]) {
+                e.flow = 0;
             }
         }
-    }
 
-    return dist[t] != inf;
-}
+        T cost = 0, flow = 0;
+        static constexpr T INF = std::numeric_limits<T>::max();
+        std::vector<T> potential(n);
 
-pair<int, int> min_cost_flow(int flow) {
-    int f = 0, ret = 0;
-    while(f <= flow && spfa()) {
-        int mn_flow = flow - f, u = t;
-        while(u != s) {
-            mn_flow =
-                min(mn_flow,
-                    G[par[u]][par_idx[u]].cap - G[par[u]][par_idx[u]].flow);
-            u = par[u];
+        auto build_potential = [&]() {
+            std::fill(potential.begin(), potential.end(), INF);
+            potential[source] = 0;
+
+            while(true) {
+                bool any = false;
+                for(int v = 0; v < n; v++) {
+                    for(const auto &[u, rev, capacity, cost, flow]: g[v]) {
+                        if(capacity != 0 && potential[v] != INF &&
+                           potential[v] + cost < potential[u]) {
+                            potential[u] = potential[v] + cost;
+                            any = true;
+                        }
+                    }
+                }
+
+                if(!any) {
+                    break;
+                }
+            }
+        };
+
+        build_potential();
+
+        std::vector<std::pair<int, int>> parent(n);
+        std::vector<std::pair<T, T>> dist(n);
+
+        auto dijkstra = [&]() {
+            std::fill(
+                dist.begin(), dist.end(),
+                std::pair<T, T>{INF, flow_limit - flow}
+            );
+            dist[source].first = 0;
+
+            std::priority_queue<
+                std::pair<T, int>, std::vector<std::pair<T, int>>,
+                std::greater<>>
+                q;
+            q.push({0, source});
+
+            while(q.size()) {
+                const auto [cur_dist, v] = q.top();
+                q.pop();
+                if(cur_dist > dist[v].first) {
+                    continue;
+                }
+
+                for(const auto &[u, rev, capacity, cost, flow]: g[v]) {
+                    if(potential[u] != INF &&
+                       cur_dist + cost - potential[u] + potential[v] <
+                           dist[u].first &&
+                       flow < capacity) {
+                        parent[u] = {v, rev};
+                        dist[u] = {
+                            cur_dist + cost - potential[u] + potential[v],
+                            std::min(dist[v].second, capacity - flow)
+                        };
+                        q.push({dist[u].first, u});
+                    }
+                }
+            }
+            return dist[sink].first != INF;
+        };
+
+        while(flow < flow_limit && dijkstra()) {
+            T delta = dist[sink].second;
+            flow += delta;
+
+            for(int v = sink; v != source; v = parent[v].first) {
+                cost -= g[v][parent[v].second].cost * delta;
+                g[v][parent[v].second].flow -= delta;
+                g[parent[v].first][g[v][parent[v].second].rev].flow += delta;
+            }
+
+            for(int i = 0; i < n; i++) {
+                if(dist[i].first != INF) {
+                    potential[i] += dist[i].first;
+                }
+            }
         }
-
-        u = t;
-        while(u != s) {
-            G[par[u]][par_idx[u]].flow += mn_flow;
-            G[u][G[par[u]][par_idx[u]].rev].flow -= mn_flow;
-            ret += G[par[u]][par_idx[u]].cost * mn_flow;
-            u = par[u];
-        }
-
-        f += mn_flow;
+        return {cost, flow};
     }
-
-    return make_pair(f, ret);
-}
-
-void read() {}
-
-void solve() {}
-
-int main() {
-    ios_base::sync_with_stdio(false);
-    cin.tie(NULL);
-
-    read();
-    solve();
-    return 0;
-}
-
-const int maxl = 100000;
-char buff[maxl];
-int ret_int, pos_buff = 0;
-
-void next_char() {
-    if(++pos_buff == maxl) {
-        fread(buff, 1, maxl, stdin), pos_buff = 0;
-    }
-}
-
-int read_int() {
-    ret_int = 0;
-    for(; buff[pos_buff] < '0' || buff[pos_buff] > '9'; next_char())
-        ;
-    for(; buff[pos_buff] >= '0' && buff[pos_buff] <= '9'; next_char()) {
-        ret_int = ret_int * 10 + buff[pos_buff] - '0';
-    }
-    return ret_int;
-}
+};

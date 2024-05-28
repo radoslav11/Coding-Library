@@ -31,73 +31,73 @@ T pw(T a, int pw) {
 }
 
 template<unsigned mod>
-class Modint {
+class modint_t {
   private:
     unsigned x;
 
   public:
-    Modint() { x = 0; }
-    Modint(unsigned _x) { x = _x; }
+    modint_t() { x = 0; }
+    modint_t(unsigned _x) { x = _x; }
     operator unsigned() { return x; }
 
-    Modint operator==(const Modint &m) const { return x == m.x; }
-    Modint operator!=(const Modint &m) const { return x != m.x; }
+    bool operator==(const modint_t &m) const { return x == m.x; }
+    bool operator!=(const modint_t &m) const { return x != m.x; }
 
-    Modint operator+=(const Modint &m) {
+    modint_t operator+=(const modint_t &m) {
         x = (x + m.x >= mod ? x + m.x - mod : x + m.x);
         return *this;
     }
-    Modint operator-=(const Modint &m) {
+    modint_t operator-=(const modint_t &m) {
         x = (x < m.x ? x - m.x + mod : x - m.x);
         return *this;
     }
-    Modint operator*=(const Modint &m) {
+    modint_t operator*=(const modint_t &m) {
         x = 1ULL * x * m.x % mod;
         return *this;
     }
 
-    Modint operator+=(const int32_t m) {
+    modint_t operator+=(const int32_t m) {
         x = (x + (m % mod) >= mod ? x + (m % mod) - mod : x + (m % mod));
         return *this;
     }
-    Modint operator-=(const int32_t m) {
+    modint_t operator-=(const int32_t m) {
         x = (x < (m % mod) ? x - (m % mod) + mod : x - (m % mod));
         return *this;
     }
-    Modint operator*=(const int32_t m) {
+    modint_t operator*=(const int32_t m) {
         x = 1ULL * x * (m % mod) % mod;
         return *this;
     }
 
-    Modint operator+=(const int64_t m) {
+    modint_t operator+=(const int64_t m) {
         x = (x + (m % mod) >= mod ? x + (m % mod) - mod : x + (m % mod));
         return *this;
     }
-    Modint operator-=(const int64_t m) {
+    modint_t operator-=(const int64_t m) {
         x = (x < (m % mod) ? x - (m % mod) + mod : x - (m % mod));
         return *this;
     }
-    Modint operator*=(const int64_t m) {
+    modint_t operator*=(const int64_t m) {
         x = 1ULL * x * (m % mod) % mod;
         return *this;
     }
 
-    Modint operator+(const Modint &m) const { return Modint(*this) += m; }
-    Modint operator-(const Modint &m) const { return Modint(*this) -= m; }
-    Modint operator*(const Modint &m) const { return Modint(*this) *= m; }
+    modint_t operator+(const modint_t &m) const { return modint_t(*this) += m; }
+    modint_t operator-(const modint_t &m) const { return modint_t(*this) -= m; }
+    modint_t operator*(const modint_t &m) const { return modint_t(*this) *= m; }
 
-    Modint operator+(const int32_t m) const { return Modint(*this) += m; }
-    Modint operator-(const int32_t m) const { return Modint(*this) -= m; }
-    Modint operator*(const int32_t m) const { return Modint(*this) *= m; }
+    modint_t operator+(const int32_t m) const { return modint_t(*this) += m; }
+    modint_t operator-(const int32_t m) const { return modint_t(*this) -= m; }
+    modint_t operator*(const int32_t m) const { return modint_t(*this) *= m; }
 
-    Modint operator+(const int64_t m) const { return Modint(*this) += m; }
-    Modint operator-(const int64_t m) const { return Modint(*this) -= m; }
-    Modint operator*(const int64_t m) const { return Modint(*this) *= m; }
+    modint_t operator+(const int64_t m) const { return modint_t(*this) += m; }
+    modint_t operator-(const int64_t m) const { return modint_t(*this) -= m; }
+    modint_t operator*(const int64_t m) const { return modint_t(*this) *= m; }
 
-    Modint inv() { return pw(Modint(*this), mod - 2); }
+    modint_t inv() { return pw(modint_t(*this), mod - 2); }
 };
 
-using mint = Modint<mod>;
+using mint = modint_t<mod>;
 
 vector<mint> fact, ifact, inv_prec;
 

@@ -1,22 +1,24 @@
 #include <bits/stdc++.h>
-
 using namespace std;
 
-template<class T>
-struct basis {
-    int max_log;
+template<class T, int num_bits>
+class xor_basis {
+  public:
+    int sz;
     vector<T> base;
 
-    void init(int _max_log) {
-        max_log = _max_log;
-        base.assign(max_log, 0);
+    void clear() {
+        sz = 0;
+        base.assign(num_bits, 0);
     }
+    xor_basis() { clear(); }
 
     void add(T val) {
-        for(int i = max_log - 1; i >= 0; i--) {
+        for(int i = num_bits - 1; i >= 0; i--) {
             if((val >> i) & 1) {
                 if(!base[i]) {
                     base[i] = val;
+                    sz++;
                     return;
                 } else {
                     val ^= base[i];
@@ -25,17 +27,11 @@ struct basis {
         }
     }
 
-    inline int size() {
-        int sz = 0;
-        for(int i = 0; i < max_log; i++) {
-            sz += (bool)(base[i]);
-        }
-        return sz;
-    }
+    inline int size() { return sz; }
 
     T max_xor() {
         T res = 0;
-        for(int i = max_log - 1; i >= 0; i--) {
+        for(int i = num_bits - 1; i >= 0; i--) {
             if(!((res >> i) & 1) && base[i]) {
                 res ^= base[i];
             }
@@ -45,7 +41,7 @@ struct basis {
     }
 
     bool can_create(T val) {
-        for(int i = max_log - 1; i >= 0; i--) {
+        for(int i = num_bits - 1; i >= 0; i--) {
             if(((val >> i) & 1) && base[i]) {
                 val ^= base[i];
             }
@@ -56,20 +52,20 @@ struct basis {
 
     vector<T> get_basis() {
         vector<T> res;
-        for(int i = 0; i < max_log; i++) {
+        for(int i = 0; i < num_bits; i++) {
             if(base[i]) {
                 res.push_back(base[i]);
             }
         }
         return res;
     }
-    
-    basis<T> merge(basis<T> other) {
-        if(max_log < other.max_log) {
+
+    xor_basis<T, num_bits> merge(xor_basis<T, num_bits> other) {
+        if(sz < other.size()) {
             return other.merge(*this);
         }
 
-        basis<T> res = *this;
+        xor_basis<T, num_bits> res = *this;
         for(auto x: other.base) {
             if(x) {
                 res.add(x);
@@ -78,16 +74,3 @@ struct basis {
         return res;
     }
 };
-
-void read() {}
-
-void solve() {}
-
-int main() {
-    ios_base::sync_with_stdio(false);
-    cin.tie(NULL);
-
-    read();
-    solve();
-    return 0;
-}

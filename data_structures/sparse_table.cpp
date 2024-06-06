@@ -1,19 +1,5 @@
 #include <bits/stdc++.h>
-#define endl '\n'
-
 using namespace std;
-template<class T, class T2>
-inline void chkmax(T &x, const T2 &y) {
-    if(x < y) {
-        x = y;
-    }
-}
-template<class T, class T2>
-inline void chkmin(T &x, const T2 &y) {
-    if(x > y) {
-        x = y;
-    }
-}
 
 template<class T, T (*merge)(T, T)>
 class sparse_table {
@@ -53,17 +39,4 @@ class sparse_table {
 };
 
 int min_custom(int a, int b) { return min(a, b); }
-sparse_table<int, min_custom> st;
-
-void read() {}
-
-void solve() {}
-
-int main() {
-    ios_base::sync_with_stdio(false);
-    cin.tie(NULL);
-
-    read();
-    solve();
-    return 0;
-}
+sparse_table<int, min_custom> tbl;

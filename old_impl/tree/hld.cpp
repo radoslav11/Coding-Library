@@ -1,9 +1,4 @@
 #include <bits/stdc++.h>
-#define endl '\n'
-
-//#pragma GCC optimize ("O3")
-//#pragma GCC target ("sse4")
-
 using namespace std;
 template<class T, class T2> inline int chkmax(T &x, const T2 &y) { return x < y ? x = y, 1 : 0; }
 template<class T, class T2> inline int chkmin(T &x, const T2 &y) { return x > y ? x = y, 1 : 0; }

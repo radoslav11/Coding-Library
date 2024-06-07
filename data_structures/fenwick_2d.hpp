@@ -56,12 +56,12 @@ struct fenwick_2d {
     }
 };
 
-int min_custom(int a, int b) { return min(a, b); }
-int max_custom(int a, int b) { return max(a, b); }
-int sum_custom(int a, int b) { return a + b; }
+// int min_custom(int a, int b) { return min(a, b); }
+// int max_custom(int a, int b) { return max(a, b); }
+// int sum_custom(int a, int b) { return a + b; }
 
-int identity_min() { return INT_MAX; }
-int identity_max() { return INT_MIN; }
-int identity_sum() { return 0; }
+// int identity_min() { return INT_MAX; }
+// int identity_max() { return INT_MIN; }
+// int identity_sum() { return 0; }
 
-fenwick_2d<int, sum_custom, identity_sum> ft;
+// fenwick_2d<int, sum_custom, identity_sum> ft;

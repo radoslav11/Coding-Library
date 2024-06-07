@@ -1,8 +1,5 @@
 #include <bits/stdc++.h>
-#define endl '\n'
-
 using namespace std;
-const int MAXN = (1 << 20);
 
 struct rmq1d  {
 	vector<int> rmq;
@@ -100,23 +97,3 @@ struct rmq2d {
 		return get(0, 0, n, l1, r1, l2, r2);
 	}
 };
-
-void read()
-{
-
-}
-
-void solve()
-{
-
-}
-
-int main()
-{
-	ios_base::sync_with_stdio(false);
-	cin.tie(NULL);
-
-	read();
-	solve();
-	return 0;
-}

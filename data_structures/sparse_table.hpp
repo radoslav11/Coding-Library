@@ -38,5 +38,5 @@ class sparse_table {
     }
 };
 
-int min_custom(int a, int b) { return min(a, b); }
-sparse_table<int, min_custom> tbl;
+// int min_custom(int a, int b) { return min(a, b); }
+// sparse_table<int, min_custom> tbl;

@@ -1,13 +1,12 @@
 #include <bits/stdc++.h>
-#define endl '\n'
-
 using namespace std;
-const int MAXN = (1 << 20);
 
-struct dsu {
+class dsu {
+  private:
     int sz;
     vector<int> par, psz;
 
+  public:
     void init(int n) {
         sz = n;
         par.assign(sz + 1, 0);
@@ -31,16 +30,3 @@ struct dsu {
         par[x] = y, psz[y] += psz[x];
     }
 };
-
-void read() {}
-
-void solve() {}
-
-int main() {
-    ios_base::sync_with_stdio(false);
-    cin.tie(NULL);
-
-    read();
-    solve();
-    return 0;
-}

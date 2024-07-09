@@ -1,19 +1,5 @@
 #include <bits/stdc++.h>
-#define endl '\n'
-
-// #pragma GCC optimize ("O3")
-// #pragma GCC target ("sse4")
-
 using namespace std;
-template<class T, class T2>
-inline int chkmax(T &x, const T2 &y) {
-    return x < y ? x = y, 1 : 0;
-}
-template<class T, class T2>
-inline int chkmin(T &x, const T2 &y) {
-    return x > y ? x = y, 1 : 0;
-}
-const int MAXN = (1 << 20);
 const int mod = (int)1e9 + 7;
 
 template<class T>
@@ -128,17 +114,7 @@ mint C(int n, int k) {
     return fact[n] * ifact[n - k] * ifact[k];
 }
 
-void read() {}
-
-void solve() {}
-
 int main() {
-    ios_base::sync_with_stdio(false);
-    cin.tie(NULL);
-
-    precompute(MAXN - 1);
-
-    read();
-    solve();
+    precompute((int)1e6 + 42);
     return 0;
 }

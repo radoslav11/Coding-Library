@@ -49,6 +49,7 @@ class lca_utils {
 
         in_time.resize(n + 1);
         out_time.resize(n + 1);
+        dfs_time = 0;
         dfs_lca(1, 1, dfs_time);
     }
 

@@ -92,7 +92,22 @@ class hash_meta_t {
         set_random_base();
         precompute_base_pow(n);
     }
+    
+    vector<hash_t> rabin_karp(const string &s) {
+        vector<hash_t> h(s.size());
+        for(size_t i = 0; i < s.size(); i++) {
+            h[i] = (i ? h[i - 1] : hash_t(0)) * hash_t(base) + hash_t(s[i]);
+        }
+        return h;
+    }
+
+    hash_t hash_range(int l, int r, const vector<hash_t> &h) {
+        if(l == 0) {
+            return h[r];
+        }
+        return h[r] - h[l - 1] * base_pow[r - l + 1];
+    }
 };
 
-hash_meta_t hash_meta;
-using hash_t = hash_meta_t::hash_t;
+// hash_meta_t hash_meta;
+// using hash_t = hash_meta_t::hash_t;

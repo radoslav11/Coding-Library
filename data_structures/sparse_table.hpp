@@ -26,7 +26,7 @@ class sparse_table {
         dp[0] = a;
 
         for(int j = 1; (1 << j) <= n; j++) {
-            for(int i = 0; i + (1 << j) < n; i++) {
+            for(int i = 0; i + (1 << j) <= n; i++) {
                 dp[j][i] = merge(dp[j - 1][i], dp[j - 1][i + (1 << (j - 1))]);
             }
         }

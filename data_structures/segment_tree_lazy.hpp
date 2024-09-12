@@ -4,10 +4,14 @@ using namespace std;
 // Motivated by atcoder library, but adapted to my style. All ranges are
 // inclusive in this implementation.
 // https://atcoder.github.io/ac-library/production/document_en/segtree.html
+//
+// Another difference is that I support a callback from the tree node to 
+// the lazy node, which is useful when we want to maintain a push that is
+// not uniform across the left and right child (arithmetic progression add).
 
 template<
     class T, T (*merge)(T, T), T (*e)(), class G, T (*lazy_apply)(G, T),
-    G (*lazy_merge)(G, G), G (*id)()>
+    G (*lazy_merge)(G, G), G (*lazy_init)(T)>
 class segment_tree_lazy {
   private:
     int n, size, log_size;
@@ -26,7 +30,7 @@ class segment_tree_lazy {
     void push(int x) {
         push_one(2 * x, lazy[x]);
         push_one(2 * x + 1, lazy[x]);
-        lazy[x] = id();
+        lazy[x] = lazy_init(tr[x]);
     }
 
     void push_all_down(int x) {
@@ -61,12 +65,13 @@ class segment_tree_lazy {
         }
 
         tr.assign(2 * size, e());
-        lazy.assign(size, id());
+        lazy.resize(size);
         for(int i = 0; i < n; i++) {
             tr[size + i] = _a[i];
         }
         for(int i = size - 1; i > 0; i--) {
             pull(i);
+            lazy[i] = lazy_init(tr[i]);
         }
     }
 

@@ -107,7 +107,7 @@ template<class T>
 class monoid_sum_arithmetic_progression {
   public:
     struct sum {
-        T sum;
+        T val;
         T l, r;
     };
  
@@ -119,7 +119,7 @@ class monoid_sum_arithmetic_progression {
  
     static sum merge(sum a, sum b) {
         return {
-            a.sum + b.sum,
+            a.val + b.val,
             a.l,
             b.r,
         };
@@ -130,7 +130,7 @@ class monoid_sum_arithmetic_progression {
     static sum lazy_apply(add_lazy f, sum x) {
         T delta = x.l - f.l_border;
         T len = x.r - x.l + 1;
-        x.sum += (delta * f.beta + f.alpha) * len + f.beta * len * (len + 1) / 2;
+        x.val += (delta * f.beta + f.alpha) * len + f.beta * len * (len + 1) / 2;
         return x;
     }
  

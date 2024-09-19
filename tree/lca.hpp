@@ -1,7 +1,7 @@
 #include <bits/stdc++.h>
 using namespace std;
 
-class lca_utils {
+class LCAUtils {
   protected:
     int max_log, dfs_time;
     vector<vector<int>> par_up;
@@ -27,7 +27,7 @@ class lca_utils {
     vector<int> in_time, out_time;
     vector<vector<int>> adj;
 
-    lca_utils() {}
+    LCAUtils() {}
 
     void init(int _n) {
         n = _n;

@@ -1,41 +1,10 @@
 #include <bits/stdc++.h>
+#include <coding_library/data_structures/fenwick.hpp>
 using namespace std;
 
 template<class T>
-struct fenwick {
-    int sz;
-    vector<T> tr;
-
-    void init(int n) {
-        sz = n + 1;
-        tr.assign(sz + 1, 0);
-    }
-
-    T query(int idx) {
-        T ans = 0;
-        for(; idx >= 1; idx -= (idx & -idx)) {
-            ans += tr[idx];
-        }
-
-        return ans;
-    }
-
-    void update(int idx, T val) {
-        if(idx <= 0) {
-            assert(false);
-            return;
-        }
-        for(; idx <= sz; idx += (idx & -idx)) {
-            tr[idx] += val;
-        }
-    }
-
-    T query(int l, int r) { return query(r) - query(l - 1); }
-};
-
-template<class T>
-struct compressed_fenwick {
-    fenwick<T> t;
+struct CompressedFenwick {
+    Fenwick<T> t;
     vector<int> li;
 
     int get_idx(int x) {

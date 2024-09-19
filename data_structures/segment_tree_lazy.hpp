@@ -5,14 +5,14 @@ using namespace std;
 // inclusive in this implementation.
 // https://atcoder.github.io/ac-library/production/document_en/segtree.html
 //
-// Another difference is that I support a callback from the tree node to 
+// Another difference is that I support a callback from the tree node to
 // the lazy node, which is useful when we want to maintain a push that is
 // not uniform across the left and right child (arithmetic progression add).
 
 template<
     class T, T (*merge)(T, T), T (*e)(), class G, T (*lazy_apply)(G, T),
     G (*lazy_merge)(G, G), G (*lazy_init)(T)>
-class segment_tree_lazy {
+class SegmentTreeLazy {
   private:
     int n, size, log_size;
     vector<T> tr;
@@ -51,9 +51,9 @@ class segment_tree_lazy {
     }
 
   public:
-    segment_tree_lazy() { init(vector<T>()); }
-    segment_tree_lazy(int _n) { init(vector<T>(_n, e())); }
-    segment_tree_lazy(const vector<T> &_a) { init(_a); }
+    SegmentTreeLazy() { init(vector<T>()); }
+    SegmentTreeLazy(int _n) { init(vector<T>(_n, e())); }
+    SegmentTreeLazy(const vector<T> &_a) { init(_a); }
 
     void init(const vector<T> &_a) {
         n = _a.size();

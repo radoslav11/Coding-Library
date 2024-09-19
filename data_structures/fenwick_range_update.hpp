@@ -1,9 +1,8 @@
 #include <bits/stdc++.h>
 using namespace std;
-const int MAXN = (1 << 20);
 
 template<class T>
-class fenwick_range_update {
+class FenwickRangeUpdate { 
   private:
     int sz;
     vector<T> tr;

@@ -2,7 +2,7 @@
 using namespace std;
 
 template<class T, T (*merge)(T, T), T (*identity)()>
-struct fenwick_2d {
+struct Fenwick2d {
     int sz;
     vector<unordered_map<int, T>> t;
 
@@ -64,4 +64,4 @@ struct fenwick_2d {
 // int identity_max() { return INT_MIN; }
 // int identity_sum() { return 0; }
 
-// fenwick_2d<int, sum_custom, identity_sum> ft;
+// Fenwick2d<int, sum_custom, identity_sum> ft;

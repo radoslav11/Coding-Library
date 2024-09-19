@@ -3,9 +3,9 @@
 using namespace std;
 
 template<class T>
-class fenwick_ru_rq {
+class FenwickRangeUpdateRangeQuery {
     int sz;
-    fenwick_range_update<T> t0, t1;
+    FenwickRangeUpdate<T> t0, t1;
 
     void init(int _sz) {
         sz = _sz;

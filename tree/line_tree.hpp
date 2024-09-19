@@ -3,18 +3,18 @@
 #include <coding_library/tree/lca_sparse_table.hpp>
 using namespace std;
 
-class line_tree {
+class LineTree {
   private:
     vector<vector<int>> adj;
-    lca_utils_rmq helper_lca;
+    LCAUtilsRMQ helper_lca;
     vector<int> vals;
 
     dsu uf;
     vector<int> best_node;
 
   public:
-    line_tree() {}
-    line_tree(
+    LineTree() {}
+    LineTree(
         vector<vector<int>> _adj, vector<int> _vals, bool one_indexed = true
     ) {
         init(_adj, _vals, one_indexed);

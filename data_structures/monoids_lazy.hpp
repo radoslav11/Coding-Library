@@ -2,78 +2,86 @@
 using namespace std;
 
 template<class T>
-class monoid_min {
+class MonoidMin {
   public:
-    struct min_val {
+    struct MinVal {
         T val;
     };
 
-    struct add_lazy {
+    struct AddLazy {
         T add_val;
     };
 
-    static min_val merge(min_val a, min_val b) { return {min(a.val, b.val)}; }
+    static MinVal merge(MinVal a, MinVal b) { return {min(a.val, b.val)}; }
 
-    static min_val e() { return {numeric_limits<T>::max()}; }
+    static MinVal e() { return {numeric_limits<T>::max()}; }
 
-    static min_val lazy_apply(add_lazy f, min_val x) {
+    static MinVal lazy_apply(AddLazy f, MinVal x) {
         return {x.val + f.add_val};
     }
 
-    static add_lazy lazy_merge(add_lazy a, add_lazy b) {
+    static AddLazy lazy_merge(AddLazy a, AddLazy b) {
         return {a.add_val + b.add_val};
     }
 
-    static add_lazy lazy_init(min_val _) { return {0}; }
+    static AddLazy lazy_init(MinVal _) { return {0}; }
 };
 
-// segment_tree_lazy<
-//     monoid_min<int>::min_val, monoid_min<int>::merge, monoid_min<int>::e,
-//     monoid_min<int>::add_lazy, monoid_min<int>::lazy_apply,
-//     monoid_min<int>::lazy_merge, monoid_min<int>::lazy_init>
+// SegmentTreeLazy<
+//     MonoidMin<int>::MinVal, 
+//     MonoidMin<int>::merge, 
+//     MonoidMin<int>::e,
+//     MonoidMin<int>::AddLazy,
+//     MonoidMin<int>::lazy_apply,
+//     MonoidMin<int>::lazy_merge, 
+//     MonoidMin<int>::lazy_init>
 
 template<class T>
-class monoid_sum {
+class MonoidSum {
   public:
-    struct sum {
+    struct Sum {
         T val;
     };
 
-    struct add_lazy {
+    struct AddLazy {
         T add_val;
     };
 
-    static sum merge(sum a, sum b) { return {a.val + b.val}; }
+    static Sum merge(Sum a, Sum b) { return {a.val + b.val}; }
 
-    static sum e() { return {0}; }
+    static Sum e() { return {0}; }
 
-    static sum lazy_apply(add_lazy f, sum x) { return {x.val + f.add_val}; }
+    static Sum lazy_apply(AddLazy f, Sum x) { return {x.val + f.add_val}; }
 
-    static add_lazy lazy_merge(add_lazy a, add_lazy b) {
+    static AddLazy lazy_merge(AddLazy a, AddLazy b) {
         return {a.add_val + b.add_val};
     }
 
-    static add_lazy lazy_init(sum _) { return {0}; }
+    static AddLazy lazy_init(Sum _) { return {0}; }
 };
 
-// segment_tree_lazy<
-//     monoid_sum<int>::sum, monoid_sum<int>::merge, monoid_sum<int>::e,
-//     monoid_sum<int>::add_lazy, monoid_sum<int>::lazy_apply,
-//     monoid_sum<int>::lazy_merge, monoid_sum<int>::lazy_init>
+// SegmentTreeLazy<
+//     MonoidSum<int>::Sum, 
+//     MonoidSum<int>::merge, 
+//     MonoidSum<int>::e,
+//     MonoidSum<int>::AddLazy,
+//     MonoidSum<int>::lazy_apply,
+//     MonoidSum<int>::lazy_merge, 
+//     MonoidSum<int>::lazy_init>
 
 template<class T>
-class monoid_min_with_count {
+class MonoidMinWithCount {
   public:
-    struct min_with_count {
+    struct MinWithCount {
         T min_val;
         int count;
     };
 
-    struct add_lazy {
+    struct AddLazy {
         T add_val;
     };
 
-    static min_with_count merge(min_with_count a, min_with_count b) {
+    static MinWithCount merge(MinWithCount a, MinWithCount b) {
         if(a.min_val < b.min_val) {
             return a;
         }
@@ -83,72 +91,68 @@ class monoid_min_with_count {
         return {a.min_val, a.count + b.count};
     }
 
-    static min_with_count e() { return {numeric_limits<T>::max(), 0}; }
+    static MinWithCount e() { return {numeric_limits<T>::max(), 0}; }
 
-    static min_with_count lazy_apply(add_lazy f, min_with_count x) {
+    static MinWithCount lazy_apply(AddLazy f, MinWithCount x) {
         return {x.min_val + f.add_val, x.count};
     }
 
-    static add_lazy lazy_merge(add_lazy a, add_lazy b) {
+    static AddLazy lazy_merge(AddLazy a, AddLazy b) {
         return {a.add_val + b.add_val};
     }
-
-    static add_lazy lazy_init(min_with_count _) { return {0}; }
+    static AddLazy lazy_init(MinWithCount _) { return {0}; }
 };
 
-// segment_tree_lazy<
-//     monoid_min_with_count<int>::min_with_count,
-//     monoid_min_with_count<int>::merge, monoid_min_with_count<int>::e,
-//     monoid_min_with_count<int>::add_lazy,
-//     monoid_min_with_count<int>::lazy_apply,
-//     monoid_min_with_count<int>::lazy_merge, monoid_min_with_count<int>::lazy_init>
+// SegmentTreeLazy<
+//     MonoidMinWithCount<int>::MinWithCount,
+//     MonoidMinWithCount<int>::merge, 
+//     MonoidMinWithCount<int>::e,
+//     MonoidMinWithCount<int>::AddLazy,
+//     MonoidMinWithCount<int>::lazy_apply,
+//     MonoidMinWithCount<int>::lazy_merge,
+//     MonoidMinWithCount<int>::lazy_init>
 
 template<class T>
-class monoid_sum_arithmetic_progression {
-  public:
-    struct sum {
+class MonoidSumArithmeticProgression {
+    struct Sum {
         T val;
         T l, r;
     };
- 
-    struct add_lazy {
+    struct AddLazy {
         T alpha;
         T beta;
         T l_border;
     };
- 
-    static sum merge(sum a, sum b) {
+
+    static Sum merge(Sum a, Sum b) {
         return {
             a.val + b.val,
             a.l,
             b.r,
         };
     }
- 
-    static sum e() { return {0, 0}; }
- 
-    static sum lazy_apply(add_lazy f, sum x) {
+    static Sum e() { return {0, 0}; }
+    static Sum lazy_apply(AddLazy f, Sum x) {
         T delta = x.l - f.l_border;
         T len = x.r - x.l + 1;
-        x.val += (delta * f.beta + f.alpha) * len + f.beta * len * (len + 1) / 2;
+        x.val +=
+            (delta * f.beta + f.alpha) * len + f.beta * len * (len + 1) / 2;
         return x;
     }
- 
-    static add_lazy lazy_merge(add_lazy a, add_lazy b) {
+    static AddLazy lazy_merge(AddLazy a, AddLazy b) {
         T delta = b.l_border - a.l_border;
         b.alpha += a.alpha + delta * a.beta;
         b.beta += a.beta;
         return b;
     }
- 
-    static add_lazy lazy_init(sum node = {}) { return {0, 0, node.l}; }
+    static AddLazy lazy_init(Sum node) { return {0, 0, node.l}; }
 };
 
-// segment_tree_lazy<
-//     monoid_sum_arithmetic_progression<int64_t>::sum,
-//     monoid_sum_arithmetic_progression<int64_t>::merge,
-//     monoid_sum_arithmetic_progression<int64_t>::e,
-//     monoid_sum_arithmetic_progression<int64_t>::add_lazy,
-//     monoid_sum_arithmetic_progression<int64_t>::lazy_apply,
-//     monoid_sum_arithmetic_progression<int64_t>::lazy_merge,
-//     monoid_sum_arithmetic_progression<int64_t>::lazy_init> 
+// SegmentTreeLazy<
+//     MonoidSumArithmeticProgression<int64_t>::Sum,
+//     MonoidSumArithmeticProgression<int64_t>::merge,
+//     MonoidSumArithmeticProgression<int64_t>::e,
+//     MonoidSumArithmeticProgression<int64_t>::AddLazy,
+//     MonoidSumArithmeticProgression<int64_t>::lazy_apply,
+//     MonoidSumArithmeticProgression<int64_t>::lazy_merge,
+//     MonoidSumArithmeticProgression<int64_t>::lazy_init>

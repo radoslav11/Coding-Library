@@ -2,7 +2,7 @@
 using namespace std;
 
 template<class T>
-class fenwick {
+class Fenwick {
   private:
     int sz;
     vector<T> tr;

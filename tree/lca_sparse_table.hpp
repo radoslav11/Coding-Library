@@ -2,7 +2,7 @@
 #include <coding_library/data_structures/sparse_table.hpp>
 using namespace std;
 
-class lca_utils_rmq {
+class LCAUtilsRMQ {
   private:
     static pair<int, int> _min_custom(pair<int, int> a, pair<int, int> b) {
         return min(a, b);

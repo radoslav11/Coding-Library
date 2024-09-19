@@ -6,7 +6,7 @@ using namespace std;
 // https://atcoder.github.io/ac-library/production/document_en/segtree.html
 
 template<class T, T (*merge)(T, T), T (*e)()>
-class segment_tree {
+class SegmentTree {
   private:
     int n, size;
     vector<T> tr;
@@ -14,9 +14,9 @@ class segment_tree {
     void pull(int x) { tr[x] = merge(tr[2 * x], tr[2 * x + 1]); }
 
   public:
-    segment_tree() { init(vector<T>()); }
-    segment_tree(int _n) { init(vector<T>(_n, e())); }
-    segment_tree(const vector<T> &_a) { init(_a); }
+    SegmentTree() { init(vector<T>()); }
+    SegmentTree(int _n) { init(vector<T>(_n, e())); }
+    SegmentTree(const vector<T> &_a) { init(_a); }
 
     void init(const vector<T> &_a) {
         n = _a.size();

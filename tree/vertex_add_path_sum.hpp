@@ -4,15 +4,15 @@
 
 using namespace std;
 
-class vertex_add_path_sum : lca_utils {
+class VertexAddPathSum : LCAUtils {
   private:
-    fenwick_range_update<int> ft;
+    FenwickRangeUpdate<int> ft;
 
   public:
-    vertex_add_path_sum() {}
+    VertexAddPathSum() {}
 
     void prepare(int root = 1) {
-        lca_utils::prepare(root);
+        LCAUtils::prepare(root);
         ft.init(dfs_time);
     }
 

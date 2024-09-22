@@ -1,46 +1,7 @@
 #include <bits/stdc++.h>
-
 using namespace std;
 
-template<class T, class T1>
-int chkmin(T &x, const T1 &y) {
-    return x > y ? x = y, 1 : 0;
-}
-
-template<class T, class T1>
-int chkmax(T &x, const T1 &y) {
-    return x < y ? x = y, 1 : 0;
-}
-
-template<typename T1, typename T2>
-ostream &operator<<(ostream &out, const pair<T1, T2> &x) {
-    return out << x.first << ' ' << x.second;
-}
-
-template<typename T1, typename T2>
-istream &operator>>(istream &in, pair<T1, T2> &x) {
-    return in >> x.first >> x.second;
-}
-
-template<typename T>
-istream &operator>>(istream &in, vector<T> &a) {
-    for(auto &x: a) {
-        in >> x;
-    }
-    return in;
-};
-
-template<typename T>
-ostream &operator<<(ostream &out, vector<T> &a) {
-    for(auto &x: a) {
-        out << x << ' ';
-    }
-    return out;
-};
-
-const int inf = (int)1e9;
-
-class directed_cactus {
+class DirectedCactus {
   private:
     int n;
     vector<vector<int>> adj;
@@ -60,12 +21,11 @@ class directed_cactus {
     }
 
   public:
-    directed_cactus() {
+    DirectedCactus() {
         n = 0;
         nxt.clear();
     }
-
-    directed_cactus(vector<int> _nxt) { init(_nxt); }
+    DirectedCactus(vector<int> _nxt) { init(_nxt); }
 
     void init(vector<int> _nxt) {
         nxt = _nxt;
@@ -116,25 +76,6 @@ class directed_cactus {
         if(in_time[to] <= in_time[from] && out_time[from] <= out_time[to]) {
             return dep[from] - dep[to] + to_add;
         }
-        return inf;
+        return -1;
     }
 };
-
-void read() {}
-
-void solve() {}
-
-int main() {
-    ios_base::sync_with_stdio(false);
-    cin.tie(nullptr);
-
-    int T = 1;
-    // cin >> T;
-    for(int test = 1; test <= T; test++) {
-        read();
-        // cout << "Case #" << test << ": ";
-        solve();
-    }
-
-    return 0;
-}

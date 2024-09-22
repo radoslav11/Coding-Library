@@ -1,18 +1,21 @@
 #include <bits/stdc++.h>
 using namespace std;
 
-class dsu {
-  private:
-    int sz;
-    vector<int> par, psz;
-
+class DSU {
   public:
-    void init(int n) {
-        sz = n;
-        par.assign(sz + 1, 0);
-        psz.assign(sz + 1, 0);
-        for(int i = 0; i <= sz; i++) {
-            par[i] = i, psz[i] = 1;
+    int n;
+    vector<int> par;
+    vector<int> sz;
+
+    DSU(int _n = 0) { init(_n); }
+
+    void init(int _n) {
+        n = _n;
+        par.assign(n + 1, 0);
+        sz.assign(n + 1, 0);
+        for(int i = 0; i <= n; i++) {
+            par[i] = i;
+            sz[i] = 1;
         }
     }
 
@@ -24,9 +27,10 @@ class dsu {
         if(x == y) {
             return;
         }
-        if(psz[x] > psz[y]) {
+        if(sz[x] > sz[y]) {
             swap(x, y);
         }
-        par[x] = y, psz[y] += psz[x];
+        par[x] = y;
+        sz[y] += sz[x];
     }
 };

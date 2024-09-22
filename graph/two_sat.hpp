@@ -1,17 +1,10 @@
 #include <bits/stdc++.h>
-
 using namespace std;
-template<class T, class T2>
-inline int chkmax(T &x, const T2 &y) {
-    return x < y ? x = y, 1 : 0;
-}
-template<class T, class T2>
-inline int chkmin(T &x, const T2 &y) {
-    return x > y ? x = y, 1 : 0;
-}
 
-class strongly_connected_components {
+class TwoSat {
   private:
+    vector<bool> visited;
+
     void dfs1(int u) {
         visited[u] = true;
         for(int v: adj[u]) {
@@ -34,28 +27,30 @@ class strongly_connected_components {
 
   public:
     int n;
-    vector<bool> visited;
     vector<vector<int>> adj, radj;
     vector<int> comp, comp_ids, top_sort;
 
-    void add_edge(int u, int v) {
-        adj[u].push_back(v);
-        radj[v].push_back(u);
-    }
+    TwoSat() {}
+    TwoSat(int _n) { init(_n); }
 
     void init(int _n) {
         n = _n;
         comp_ids.clear();
         top_sort.clear();
-        adj.assign(n + 1, {});
-        radj.assign(n + 1, {});
+        adj.assign(2 * n, {});
+        radj.assign(2 * n, {});
     }
 
-    void solve() {
-        comp.assign(n + 1, -1);
-        visited.assign(n + 1, false);
+    void add_implication(int u, int v, bool neg_u = false, bool neg_v = false) {
+        adj[u << 1 | neg_u].push_back(v << 1 | neg_v);
+        radj[v << 1 | neg_v].push_back(u << 1 | neg_u);
+    }
 
-        for(int i = 1; i <= n; i++) {
+    pair<bool, vector<bool>> solve() {
+        comp.assign(2 * n, -1);
+        visited.assign(2 * n, false);
+
+        for(int i = 0; i < 2 * n; i++) {
             if(!visited[i]) {
                 dfs1(i);
             }
@@ -69,18 +64,16 @@ class strongly_connected_components {
                 dfs2(u);
             }
         }
+
+        vector<bool> assignment(n);
+        for(int i = 0; i < n; i++) {
+            if(comp[i << 1] == comp[i << 1 | 1]) {
+                return {false, {}};
+            }
+
+            assignment[i] = comp[i << 1] > comp[i << 1 | 1];
+        }
+
+        return {true, assignment};
     }
 };
-
-void read() {}
-
-void solve() {}
-
-int main() {
-    ios_base::sync_with_stdio(false);
-    cin.tie(NULL);
-
-    read();
-    solve();
-    return 0;
-}

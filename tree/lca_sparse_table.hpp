@@ -8,7 +8,7 @@ class LCAUtilsRMQ {
         return min(a, b);
     }
 
-    sparse_table<pair<int, int>, _min_custom> rmq;
+    SparseTable<pair<int, int>, _min_custom> rmq;
     vector<int> pos, dep;
     vector<pair<int, int>> order;
 

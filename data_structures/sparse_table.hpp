@@ -2,14 +2,14 @@
 using namespace std;
 
 template<class T, T (*merge)(T, T)>
-class sparse_table {
+class SparseTable { 
   private:
     int n;
     vector<vector<T>> dp;
     vector<int> prec_lg2;
 
   public:
-    sparse_table() {
+    SparseTable() {
         n = 0;
         dp.clear();
         prec_lg2.clear();
@@ -39,4 +39,4 @@ class sparse_table {
 };
 
 // int min_custom(int a, int b) { return min(a, b); }
-// sparse_table<int, min_custom> tbl;
+// SparseTable<int, min_custom> tbl;

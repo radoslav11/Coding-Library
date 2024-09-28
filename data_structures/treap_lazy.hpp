@@ -169,6 +169,7 @@ class Treap {
 
     void _pull_all(Node* t) {
         if(t) {
+            t->push();
             _pull_all(t->left);
             _pull_all(t->right);
             t->pull();

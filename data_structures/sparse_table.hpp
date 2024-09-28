@@ -2,7 +2,7 @@
 using namespace std;
 
 template<class T, T (*merge)(T, T)>
-class SparseTable { 
+class SparseTable {
   private:
     int n;
     vector<vector<T>> dp;
@@ -15,7 +15,7 @@ class SparseTable {
         prec_lg2.clear();
     }
 
-    void init(const vector<T> &a) {
+    void init(const vector<T>& a) {
         n = a.size();
         prec_lg2.resize(n + 1);
         for(int i = 2; i <= n; i++) {

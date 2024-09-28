@@ -2,7 +2,7 @@
 using namespace std;
 
 template<class T, T (*merge)(T, T)>
-class sparse_table_disjoint {
+class SparseTableDisjoint {
   private:
     int n;
     vector<int> prec_lg2, mask;
@@ -33,7 +33,7 @@ class sparse_table_disjoint {
     }
 
   public:
-    sparse_table_disjoint() {
+    SparseTableDisjoint() {
         n = 0;
         a.clear();
         dp.clear();
@@ -41,7 +41,7 @@ class sparse_table_disjoint {
         mask.clear();
     }
 
-    void init(const vector<T> &_a) {
+    void init(const vector<T>& _a) {
         a = _a;
         n = a.size();
         prec_lg2.assign(4 * n + 1, 0);

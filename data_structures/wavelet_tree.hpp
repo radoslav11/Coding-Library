@@ -1,40 +1,39 @@
 #include <bits/stdc++.h>
 using namespace std;
 
-struct wavelet_tree {
-    int lo, hi;
-    wavelet_tree *l, *r;
-    int *b, psz;
+class WaveletTree {
+  private:
+    int lo{1}, hi{0};
+    WaveletTree *left{nullptr}, *right{nullptr};
+    std::vector<int> b;
+    int psz{0};
 
-    wavelet_tree() {
-        lo = 1;
-        hi = 0;
-        psz = 0;
-        l = NULL;
-        r = NULL;
-    }
+  public:
+    WaveletTree() = default;
 
-    void init(int *from, int *to, int x, int y) {
-        lo = x, hi = y;
-        if(lo == hi || from >= to) {
+    void init(const std::vector<int>& arr, int x, int y) {
+        lo = x;
+        hi = y;
+        if(lo == hi || arr.empty()) {
             return;
         }
         int mid = (lo + hi) >> 1;
         auto f = [mid](int x) { return x <= mid; };
-        b = (int *)malloc((to - from + 2) * sizeof(int));
-        psz = 0;
-        b[psz++] = 0;
-        for(auto it = from; it != to; it++) {
-            b[psz] = (b[psz - 1] + f(*it)), psz++;
+        b.resize(arr.size() + 1);
+        b[0] = 0;
+        for(size_t i = 0; i < arr.size(); ++i) {
+            b[i + 1] = b[i] + f(arr[i]);
         }
-        auto pivot = stable_partition(from, to, f);
-        l = new wavelet_tree();
-        l->init(from, pivot, lo, mid);
-        r = new wavelet_tree();
-        r->init(pivot, to, mid + 1, hi);
+        psz = arr.size();
+        auto pivot = std::stable_partition(arr.begin(), arr.end(), f);
+
+        left = new WaveletTree();
+        right = new WaveletTree();
+        left->init(std::vector<int>(arr.begin(), pivot), lo, mid);
+        right->init(std::vector<int>(pivot, arr.end()), mid + 1, hi);
     }
 
-    int kth(int l, int r, int k) {
+    int kth(int l, int r, int k) const {
         if(l > r) {
             return 0;
         }
@@ -43,12 +42,12 @@ struct wavelet_tree {
         }
         int inLeft = b[r] - b[l - 1], lb = b[l - 1], rb = b[r];
         if(k <= inLeft) {
-            return this->l->kth(lb + 1, rb, k);
+            return left->kth(lb + 1, rb, k);
         }
-        return this->r->kth(l - lb, r - rb, k - inLeft);
+        return right->kth(l - lb, r - rb, k - inLeft);
     }
 
-    int LTE(int l, int r, int k) {
+    int LTE(int l, int r, int k) const {
         if(l > r || k < lo) {
             return 0;
         }
@@ -56,10 +55,10 @@ struct wavelet_tree {
             return r - l + 1;
         }
         int lb = b[l - 1], rb = b[r];
-        return this->l->LTE(lb + 1, rb, k) + this->r->LTE(l - lb, r - rb, k);
+        return left->LTE(lb + 1, rb, k) + right->LTE(l - lb, r - rb, k);
     }
 
-    int count(int l, int r, int k) {
+    int count(int l, int r, int k) const {
         if(l > r || k < lo || k > hi) {
             return 0;
         }
@@ -69,13 +68,8 @@ struct wavelet_tree {
         int lb = b[l - 1], rb = b[r];
         int mid = (lo + hi) >> 1;
         if(k <= mid) {
-            return this->l->count(lb + 1, rb, k);
+            return left->count(lb + 1, rb, k);
         }
-        return this->r->count(l - lb, r - rb, k);
-    }
-
-    ~wavelet_tree() {
-        delete l;
-        delete r;
+        return right->count(l - lb, r - rb, k);
     }
 };

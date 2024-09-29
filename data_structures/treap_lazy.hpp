@@ -226,35 +226,35 @@ class Treap {
     }
 };
 
-template<class T>
-struct AddLazy {
-    T add_key = 0;
-    T add_data = 0;
+// template<class T>
+// struct AddLazy {
+//     T add_key = 0;
+//     T add_data = 0;
 
-    template<class G, uint64_t (*rng)(), T (*merge_func)(T, T)>
-    void apply_lazy(TreapNode<pair<T, G>, T, merge_func, AddLazy, rng>* node) {
-        if(!node || (add_key == 0 && add_data == 0)) {
-            return;
-        }
+//     template<class G, uint64_t (*rng)(), T (*merge_func)(T, T)>
+//     void apply_lazy(TreapNode<pair<T, G>, T, merge_func, AddLazy, rng>* node) {
+//         if(!node || (add_key == 0 && add_data == 0)) {
+//             return;
+//         }
 
-        node->key.first += add_key;
-        node->data += add_data;
-        node->subtree += add_data * (T)node->size;
+//         node->key.first += add_key;
+//         node->data += add_data;
+//         node->subtree += add_data * (T)node->size;
 
-        if(node->left) {
-            node->left->lazy.add_data += add_data;
-            node->left->lazy.add_key += add_key;
-        }
+//         if(node->left) {
+//             node->left->lazy.add_data += add_data;
+//             node->left->lazy.add_key += add_key;
+//         }
 
-        if(node->right) {
-            node->right->lazy.add_data += add_data;
-            node->right->lazy.add_key += add_key;
-        }
+//         if(node->right) {
+//             node->right->lazy.add_data += add_data;
+//             node->right->lazy.add_key += add_key;
+//         }
 
-        add_key = 0;
-        add_data = 0;
-    }
-};
+//         add_key = 0;
+//         add_data = 0;
+//     }
+// };
 
 // int64_t add(int64_t a, int64_t b) { return a + b; }
 // using TreapWithLazy = Treap<pair<int64_t, int>, int64_t, add,

@@ -14,6 +14,7 @@ struct TreapNode {
     TreapNode(KeyT key, T data)
         : key(key), data(data), left(nullptr), right(nullptr), size(1) {
         prior = rng();
+        lazy = LazyT();
     }
 
     void pull() {
@@ -66,14 +67,15 @@ struct TreapNode {
         }
 
         t->push();
-        if(t->left && t->left->size >= size) {
+        size_t left_size = t->left ? t->left->size : 0;
+        if(left_size >= size) {
             auto [left, t_left] = split_by_size(t->left, size);
             t->left = t_left;
             t->pull();
             return {left, t};
         } else {
             auto [t_right, right] = split_by_size(
-                t->right, size - 1 - (t->left ? t->left->size : 0)
+                t->right, size - 1 - left_size
             );
             t->right = t_right;
             t->pull();
@@ -162,6 +164,8 @@ class Treap {
   public:
     static uint64_t rng() {
         static mt19937_64 static_rng(random_device{}());
+        // FOR DEBUG:
+        // static mt19937_64 static_rng(42);
         return static_rng();
     }
 
@@ -225,6 +229,36 @@ class Treap {
         return res;
     }
 };
+
+// template<class T>
+// struct ReverseLazy {
+//     bool should_reverse;
+
+//     ReverseLazy() { should_reverse = false; }
+
+//     template<class G, uint64_t (*rng)(), T (*merge_func)(T, T)>
+//     void apply_lazy(TreapNode<G, T, merge_func, ReverseLazy, rng>* node) {
+//         if(!node || !should_reverse) {
+//             return;
+//         }
+
+//         swap(node->left, node->right);
+//         if(node->left) {
+//             node->left->lazy.should_reverse ^= true;
+//         }
+//         if(node->right) {
+//             node->right->lazy.should_reverse ^= true;
+//         }
+
+//         should_reverse = false;
+//     }
+// };
+
+// struct EmptyMonoid {
+//     static EmptyMonoid merge(EmptyMonoid a, EmptyMonoid b) {
+//         return EmptyMonoid();
+//     }
+// };
 
 // template<class T>
 // struct AddLazy {

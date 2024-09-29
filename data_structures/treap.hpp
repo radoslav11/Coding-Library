@@ -50,14 +50,17 @@ struct TreapNode {
         if(!t) {
             return {nullptr, nullptr};
         }
-        if(t->left && t->left->size >= size) {
+
+        t->push();
+        size_t left_size = t->left ? t->left->size : 0;
+        if(left_size >= size) {
             auto [left, t_left] = split_by_size(t->left, size);
             t->left = t_left;
             t->pull();
             return {left, t};
         } else {
             auto [t_right, right] = split_by_size(
-                t->right, size - 1 - (t->left ? t->left->size : 0)
+                t->right, size - 1 - left_size
             );
             t->right = t_right;
             t->pull();

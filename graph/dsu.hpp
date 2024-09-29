@@ -22,15 +22,16 @@ class DSU {
     int root(int u) { return par[u] = ((u == par[u]) ? u : root(par[u])); }
     bool connected(int x, int y) { return root(x) == root(y); }
 
-    void unite(int x, int y) {
+    int unite(int x, int y) {
         x = root(x), y = root(y);
         if(x == y) {
-            return;
+            return x;
         }
         if(sz[x] > sz[y]) {
             swap(x, y);
         }
         par[x] = y;
         sz[y] += sz[x];
+        return y;
     }
 };

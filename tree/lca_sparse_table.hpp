@@ -29,6 +29,13 @@ class LCAUtilsRMQ {
     int n;
     vector<vector<int>> adj;
 
+    LCAUtilsRMQ() { n = 0; }
+    LCAUtilsRMQ(int _n) { init(_n); }
+    LCAUtilsRMQ(int _n, const vector<vector<int>>& _adj) {
+        init(_n);
+        adj = _adj;
+    }
+
     void add_edge(int u, int v) {
         adj[u].push_back(v);
         adj[v].push_back(u);
@@ -37,13 +44,13 @@ class LCAUtilsRMQ {
     void init(int _n) {
         n = _n;
         order.clear();
-        adj.assign(n + 1, {});
+        adj.assign(n, {});
     }
 
-    void prepare(int root = 1) {
+    void prepare(int root = 0) {
         order.clear();
-        pos.resize(n + 1);
-        dep.resize(n + 1);
+        pos.resize(n);
+        dep.resize(n);
         pre_dfs(root);
         rmq.init(order);
     }

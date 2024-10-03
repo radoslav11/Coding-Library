@@ -6,7 +6,7 @@ class LCAUtils {
     int max_log, dfs_time;
     vector<vector<int>> par_up;
 
-    void dfs_lca(int u, int pr, int &dfs_time) {
+    void dfs_lca(int u, int pr, int& dfs_time) {
         in_time[u] = ++dfs_time;
         par_up[u][0] = pr;
         for(int i = 1; i < max_log; i++) {
@@ -27,7 +27,13 @@ class LCAUtils {
     vector<int> in_time, out_time;
     vector<vector<int>> adj;
 
-    LCAUtils() {}
+    LCAUtils() : n(0) {}
+    LCAUtils(int _n) { init(_n); }
+    LCAUtils(int _n, const vector<vector<int>>& _adj, int root = 0) {
+        init(_n);
+        adj = _adj;
+        prepare(root);
+    }
 
     void init(int _n) {
         n = _n;

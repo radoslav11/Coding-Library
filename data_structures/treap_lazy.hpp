@@ -74,9 +74,8 @@ struct TreapNode {
             t->pull();
             return {left, t};
         } else {
-            auto [t_right, right] = split_by_size(
-                t->right, size - 1 - left_size
-            );
+            auto [t_right, right] =
+                split_by_size(t->right, size - 1 - left_size);
             t->right = t_right;
             t->pull();
             return {t, right};
@@ -266,7 +265,8 @@ class Treap {
 //     T add_data = 0;
 
 //     template<class G, uint64_t (*rng)(), T (*merge_func)(T, T)>
-//     void apply_lazy(TreapNode<pair<T, G>, T, merge_func, AddLazy, rng>* node) {
+//     void apply_lazy(TreapNode<pair<T, G>, T, merge_func, AddLazy, rng>* node)
+//     {
 //         if(!node || (add_key == 0 && add_data == 0)) {
 //             return;
 //         }
@@ -296,3 +296,4 @@ class Treap {
 
 // Tested on https://codeforces.com/contest/702/problem/F.
 // https://codeforces.com/contest/702/submission/283296920
+// https://codeforces.com/problemsets/acmsguru/submission/99999/294488144

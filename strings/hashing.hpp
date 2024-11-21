@@ -1,7 +1,7 @@
 #include <bits/stdc++.h>
 using namespace std;
 
-class hash_meta_t {
+class HashMeta {
   private:
     void set_random_base() {
         seed_seq seed{
@@ -52,36 +52,36 @@ class hash_meta_t {
         hash_t(uint64_t h) : h(h) {}
         operator uint64_t() const { return h; }
 
-        hash_t &operator+=(const hash_t &other) {
+        hash_t& operator+=(const hash_t& other) {
             h = add(h, other.h);
             return *this;
         }
 
-        hash_t &operator-=(const hash_t &other) {
+        hash_t& operator-=(const hash_t& other) {
             h = sub(h, other.h);
             return *this;
         }
 
-        hash_t &operator*=(const hash_t &other) {
+        hash_t& operator*=(const hash_t& other) {
             h = mul(h, other.h);
             return *this;
         }
 
-        hash_t operator+(const hash_t &other) const {
+        hash_t operator+(const hash_t& other) const {
             return hash_t(*this) += other;
         }
-        hash_t operator-(const hash_t &other) const {
+        hash_t operator-(const hash_t& other) const {
             return hash_t(*this) -= other;
         }
-        hash_t operator*(const hash_t &other) const {
+        hash_t operator*(const hash_t& other) const {
             return hash_t(*this) *= other;
         }
 
-        bool operator==(const hash_t &other) const { return h == other.h; }
-        bool operator!=(const hash_t &other) const { return h != other.h; }
+        bool operator==(const hash_t& other) const { return h == other.h; }
+        bool operator!=(const hash_t& other) const { return h != other.h; }
 
         // For use in std::map and std::set
-        bool operator<(const hash_t &other) const { return h < other.h; }
+        bool operator<(const hash_t& other) const { return h < other.h; }
     };
 
     uint64_t base;
@@ -92,16 +92,18 @@ class hash_meta_t {
         set_random_base();
         precompute_base_pow(n);
     }
-    
-    vector<hash_t> rabin_karp(const string &s) {
-        vector<hash_t> h(s.size());
-        for(size_t i = 0; i < s.size(); i++) {
-            h[i] = (i ? h[i - 1] : hash_t(0)) * hash_t(base) + hash_t(s[i]);
+
+    template<typename T>
+    vector<hash_t> rabin_karp(const T& container) {
+        vector<hash_t> h(container.size());
+        for(size_t i = 0; i < container.size(); i++) {
+            h[i] = (i ? h[i - 1] : hash_t(0)) * hash_t(base) +
+                   hash_t(container[i]);
         }
         return h;
     }
 
-    hash_t hash_range(int l, int r, const vector<hash_t> &h) {
+    hash_t hash_range(int l, int r, const vector<hash_t>& h) {
         if(l == 0) {
             return h[r];
         }
@@ -109,5 +111,5 @@ class hash_meta_t {
     }
 };
 
-// hash_meta_t hash_meta;
-// using hash_t = hash_meta_t::hash_t;
+// HashMeta hash_meta;
+// using hash_t = HashMeta::hash_t;

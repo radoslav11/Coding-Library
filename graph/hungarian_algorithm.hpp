@@ -7,13 +7,13 @@ using namespace std;
 template<class T>
 class HungarianAlgorithm {
   private:
-    const T INF = numeric_limits<T>::max();
+    const T INF = numeric_limits<T>::max() / 2;
     vector<vector<T>> cost;
 
   public:
     vector<int> assignment;
 
-    HungarianAlgorithm(const vector<vector<T>> &a) {
+    HungarianAlgorithm(const vector<vector<T>>& a) {
         int n = a.size(), m = a[0].size();
         cost.assign(n + 1, vector<T>(m + 1));
         for(int i = 0; i < n; i++) {
@@ -22,18 +22,20 @@ class HungarianAlgorithm {
             }
         }
 
-        vector<T> u(n + 1), v(m + 1), p(m + 1, n), way(m + 1, n);
+        vector<T> u(n + 1), v(m + 1);
+        vector<int> p(m + 1, n), way(m + 1, n);
         for(int i = 0; i < n; i++) {
             p[m] = i;
-            int j0 = 0;
+            int j0 = m;
             vector<T> minv(m + 1, INF);
-            vector<char> used(m + 1, false);
+            vector<bool> used(m + 1, false);
             do {
                 used[j0] = true;
-                int i0 = p[j0], delta = INF, j1;
+                int i0 = p[j0], j1;
+                T delta = INF;
                 for(int j = 0; j < m; j++) {
                     if(!used[j]) {
-                        int cur = cost[i0][j] - u[i0] - v[j];
+                        T cur = cost[i0][j] - u[i0] - v[j];
                         if(cur < minv[j]) {
                             minv[j] = cur;
                             way[j] = j0;
@@ -62,7 +64,7 @@ class HungarianAlgorithm {
             } while(j0 != m);
         }
 
-        assignment = vector<int>(std::begin(p), std::end(p) - 1);
+        assignment = vector<int>(begin(p), end(p) - 1);
     }
 
     T get_cost() {

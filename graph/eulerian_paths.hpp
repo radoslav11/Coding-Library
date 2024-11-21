@@ -1,24 +1,17 @@
 #include <bits/stdc++.h>
 using namespace std;
 
-
 // This implementation find cnt_odd_vertices / 2 eulerian paths that cover
 // all edges of the graph. The way to use it is to create an object and
 // incrementally add edges to it. Then, call find_paths() to get the paths.
 // If the number of paths is 1, we have either a cycle or a path.
-// 
+//
 // Tested on:
 // https://codeforces.com/problemsets/acmsguru/problem/99999/101
 // https://codesprintla24.kattis.com/contests/codesprintla24open/problems/catbusplan
 
-
 class EulerianPaths {
   private:
-    int n, m;
-    vector<vector<pair<int, int>>> adj;
-    vector<pair<int, int>> edges;
-    vector<int> deg;
-
     void dfs(int u, vector<int>& path, vector<bool>& used, vector<int>& po) {
         for(; po[u] < (int)adj[u].size();) {
             int idx = po[u]++;
@@ -31,18 +24,30 @@ class EulerianPaths {
     }
 
   public:
-    EulerianPaths(int _n) : n(_n), m(0) {
+    int n, m;
+    vector<int> deg;
+    vector<vector<pair<int, int>>> adj;
+    vector<pair<int, int>> edges;
+
+    EulerianPaths(int _n = 0) { init(_n); }
+
+    void init(int _n) {
+        n = _n;
+        m = 0;
         adj.assign(n + 1, {});
         deg.assign(n + 1, 0);
+        edges.clear();
     }
 
-    void add_edge(int u, int v) {
+    int add_edge(int u, int v) {
         adj[u].push_back({v, m * 2});
         adj[v].push_back({u, m * 2 + 1});
         edges.push_back({u, v});
         deg[u]++;
         deg[v]++;
         m++;
+
+        return edges.size() - 1;
     }
 
     vector<vector<int>> find_paths() {

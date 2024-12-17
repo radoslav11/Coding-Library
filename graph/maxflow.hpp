@@ -4,8 +4,6 @@ using namespace std;
 template<class T>
 class MaxFlow {
   private:
-    const static T INF = numeric_limits<T>::max();
-
     struct Edge {
         T flow, cap;
         int idx, rev, to;
@@ -59,6 +57,8 @@ class MaxFlow {
     }
 
   public:
+    const static T INF = numeric_limits<T>::max();
+
     MaxFlow(int n = 0) {
         init(n);
     }

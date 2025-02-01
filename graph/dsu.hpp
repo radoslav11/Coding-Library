@@ -34,4 +34,12 @@ class DSU {
         sz[y] += sz[x];
         return y;
     }
+
+    vector<vector<int>> components() {
+        vector<vector<int>> comp(n + 1);
+        for(int i = 0; i <= n; i++) {
+            comp[root(i)].push_back(i);
+        }
+        return comp;
+    }
 };

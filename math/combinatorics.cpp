@@ -26,18 +26,18 @@ class modint_t {
     modint_t(unsigned _x) { x = _x; }
     operator unsigned() { return x; }
 
-    bool operator==(const modint_t &m) const { return x == m.x; }
-    bool operator!=(const modint_t &m) const { return x != m.x; }
+    bool operator==(const modint_t& m) const { return x == m.x; }
+    bool operator!=(const modint_t& m) const { return x != m.x; }
 
-    modint_t operator+=(const modint_t &m) {
+    modint_t operator+=(const modint_t& m) {
         x = (x + m.x >= mod ? x + m.x - mod : x + m.x);
         return *this;
     }
-    modint_t operator-=(const modint_t &m) {
+    modint_t operator-=(const modint_t& m) {
         x = (x < m.x ? x - m.x + mod : x - m.x);
         return *this;
     }
-    modint_t operator*=(const modint_t &m) {
+    modint_t operator*=(const modint_t& m) {
         x = 1ULL * x * m.x % mod;
         return *this;
     }
@@ -68,9 +68,9 @@ class modint_t {
         return *this;
     }
 
-    modint_t operator+(const modint_t &m) const { return modint_t(*this) += m; }
-    modint_t operator-(const modint_t &m) const { return modint_t(*this) -= m; }
-    modint_t operator*(const modint_t &m) const { return modint_t(*this) *= m; }
+    modint_t operator+(const modint_t& m) const { return modint_t(*this) += m; }
+    modint_t operator-(const modint_t& m) const { return modint_t(*this) -= m; }
+    modint_t operator*(const modint_t& m) const { return modint_t(*this) *= m; }
 
     modint_t operator+(const int32_t m) const { return modint_t(*this) += m; }
     modint_t operator-(const int32_t m) const { return modint_t(*this) -= m; }

@@ -2,7 +2,7 @@
 using namespace std;
 
 template<class T, int num_bits>
-class bit_trie {
+class BitTrie {
   public:
     struct node {
         array<int, 2> to;
@@ -18,7 +18,7 @@ class bit_trie {
 
     void clear() { trie = {node()}; }
 
-    bit_trie() { clear(); }
+    BitTrie() { clear(); }
 
     void add(T x, int cnt) {
         int u = 0;

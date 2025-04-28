@@ -2,7 +2,7 @@
 using namespace std;
 
 template<class T, int num_bits>
-class xor_basis {
+class XorBasis {
   public:
     int sz;
     vector<T*> base;
@@ -11,7 +11,7 @@ class xor_basis {
         sz = 0;
         base.assign(num_bits, nullptr);
     }
-    xor_basis() { clear(); }
+    XorBasis() { clear(); }
 
     void add(T val) {
         for(int i = num_bits - 1; i >= 0; i--) {
@@ -59,12 +59,12 @@ class xor_basis {
         return res;
     }
 
-    xor_basis<T, num_bits> merge(const xor_basis<T, num_bits>& other) {
+    XorBasis<T, num_bits> merge(const XorBasis<T, num_bits>& other) {
         if(sz < other.size()) {
             return other.merge(*this);
         }
 
-        xor_basis<T, num_bits> res = *this;
+        XorBasis<T, num_bits> res = *this;
         for(auto x: other.base) {
             if(x) {
                 res.add(*x);

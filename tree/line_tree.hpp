@@ -9,7 +9,7 @@ class LineTree {
     LCAUtilsRMQ helper_lca;
     vector<int> vals;
 
-    dsu uf;
+    DSU uf;
     vector<int> best_node;
 
   public:

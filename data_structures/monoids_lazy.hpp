@@ -6,10 +6,18 @@ class MonoidMin {
   public:
     struct MinVal {
         T val;
+        bool operator==(const MinVal& other) const { return val == other.val; }
+        bool operator!=(const MinVal& other) const { return !(*this == other); }
     };
 
     struct AddLazy {
         T add_val;
+        bool operator==(const AddLazy& other) const {
+            return add_val == other.add_val;
+        }
+        bool operator!=(const AddLazy& other) const {
+            return !(*this == other);
+        }
     };
 
     static MinVal merge(MinVal a, MinVal b) { return {min(a.val, b.val)}; }
@@ -28,45 +36,40 @@ class MonoidMin {
 };
 
 // SegmentTreeLazy<
-//     MonoidMin<int>::MinVal, 
-//     MonoidMin<int>::merge, 
+//     MonoidMin<int>::MinVal,
+//     MonoidMin<int>::merge,
 //     MonoidMin<int>::e,
 //     MonoidMin<int>::AddLazy,
 //     MonoidMin<int>::lazy_apply,
-//     MonoidMin<int>::lazy_merge, 
+//     MonoidMin<int>::lazy_merge,
 //     MonoidMin<int>::lazy_init>
 
 template<class T>
 class MonoidSum {
   public:
-    struct Sum {
-        T val;
-    };
+    using Sum = T;
+    using AddLazy = T;
 
-    struct AddLazy {
-        T add_val;
-    };
+    static Sum merge(Sum a, Sum b) { return a + b; }
 
-    static Sum merge(Sum a, Sum b) { return {a.val + b.val}; }
+    static Sum e() { return 0; }
 
-    static Sum e() { return {0}; }
+    static Sum lazy_apply(AddLazy f, Sum x) { return f + x; }
 
-    static Sum lazy_apply(AddLazy f, Sum x) { return {x.val + f.add_val}; }
+    static AddLazy lazy_merge(AddLazy a, AddLazy b) { return a + b; }
 
-    static AddLazy lazy_merge(AddLazy a, AddLazy b) {
-        return {a.add_val + b.add_val};
-    }
+    static AddLazy lazy_init(Sum _) { return 0; }
 
-    static AddLazy lazy_init(Sum _) { return {0}; }
+    static Sum inverse(Sum x) { return -x; }
 };
 
 // SegmentTreeLazy<
-//     MonoidSum<int>::Sum, 
-//     MonoidSum<int>::merge, 
+//     MonoidSum<int>::Sum,
+//     MonoidSum<int>::merge,
 //     MonoidSum<int>::e,
 //     MonoidSum<int>::AddLazy,
 //     MonoidSum<int>::lazy_apply,
-//     MonoidSum<int>::lazy_merge, 
+//     MonoidSum<int>::lazy_merge,
 //     MonoidSum<int>::lazy_init>
 
 template<class T>
@@ -75,10 +78,23 @@ class MonoidMinWithCount {
     struct MinWithCount {
         T min_val;
         int count;
+
+        bool operator==(const MinWithCount& other) const {
+            return min_val == other.min_val && count == other.count;
+        }
+        bool operator!=(const MinWithCount& other) const {
+            return !(*this == other);
+        }
     };
 
     struct AddLazy {
         T add_val;
+        bool operator==(const AddLazy& other) const {
+            return add_val == other.add_val;
+        }
+        bool operator!=(const AddLazy& other) const {
+            return !(*this == other);
+        }
     };
 
     static MinWithCount merge(MinWithCount a, MinWithCount b) {
@@ -105,7 +121,7 @@ class MonoidMinWithCount {
 
 // SegmentTreeLazy<
 //     MonoidMinWithCount<int>::MinWithCount,
-//     MonoidMinWithCount<int>::merge, 
+//     MonoidMinWithCount<int>::merge,
 //     MonoidMinWithCount<int>::e,
 //     MonoidMinWithCount<int>::AddLazy,
 //     MonoidMinWithCount<int>::lazy_apply,
@@ -117,11 +133,22 @@ class MonoidSumArithmeticProgression {
     struct Sum {
         T val;
         T l, r;
+        bool operator==(const Sum& other) const {
+            return val == other.val && l == other.l && r == other.r;
+        }
+        bool operator!=(const Sum& other) const { return !(*this == other); }
     };
     struct AddLazy {
         T alpha;
         T beta;
         T l_border;
+        bool operator==(const AddLazy& other) const {
+            return alpha == other.alpha && beta == other.beta &&
+                   l_border == other.l_border;
+        }
+        bool operator!=(const AddLazy& other) const {
+            return !(*this == other);
+        }
     };
 
     static Sum merge(Sum a, Sum b) {

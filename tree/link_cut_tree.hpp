@@ -199,7 +199,7 @@ class LinkCutTree {
 
     void reroot(int x) {
         access(x);
-        nodes[x].flip ^= true;
+        nodes[x].flip = !nodes[x].flip;
         push(&nodes[x]);
     }
 

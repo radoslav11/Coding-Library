@@ -13,7 +13,7 @@ class HopcroftKarp {
     bool bfs() {
         queue<int> q;
         dist.assign(n, -1);
-        for(int u = 0; u < n; ++u) {
+        for(int u = 0; u < n; u++) {
             if(inv_match[u] == -1) {
                 dist[u] = 0;
                 q.push(u);
@@ -84,7 +84,7 @@ class HopcroftKarp {
 
         int ans = 0;
         while(bfs()) {
-            for(int u = 0; u < n; ++u) {
+            for(int u = 0; u < n; u++) {
                 if(inv_match[u] == -1 && dfs(u)) {
                     ans++;
                 }
@@ -95,7 +95,7 @@ class HopcroftKarp {
 
     vector<pair<int, int>> get_matching() {
         vector<pair<int, int>> matches;
-        for(int u = 0; u < n; ++u) {
+        for(int u = 0; u < n; u++) {
             if(inv_match[u] != -1) {
                 matches.emplace_back(u, inv_match[u]);
             }
@@ -107,13 +107,13 @@ class HopcroftKarp {
         vector<int> left_cover, right_cover;
         bfs();
 
-        for(int u = 0; u < n; ++u) {
+        for(int u = 0; u < n; u++) {
             if(dist[u] == -1) {
                 left_cover.push_back(u);
             }
         }
 
-        for(int v = 0; v < m; ++v) {
+        for(int v = 0; v < m; v++) {
             if(match[v] != -1 && dist[match[v]] != -1) {
                 right_cover.push_back(v);
             }

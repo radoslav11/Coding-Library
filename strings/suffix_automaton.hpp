@@ -1,16 +1,21 @@
 #include <bits/stdc++.h>
 using namespace std;
 
+template<class T = string>
 class SuffixAutomaton {
   private:
+    using G = conditional_t<
+        is_same_v<T, const char*> || is_same_v<T, char*> || is_array_v<T>, char,
+        typename T::value_type>;
+
     struct State {
-        map<char, int> to;
+        map<G, int> to;
         int len;
         int link;
         State(int l = 0, int lnk = -1) : len(l), link(lnk) {}
     };
 
-    int check_replace_with_clone(int p, char c) {
+    int check_replace_with_clone(int p, G c) {
         int q = states[p].to[c];
         if(states[p].len + 1 == states[q].len) {
             return q;
@@ -32,9 +37,9 @@ class SuffixAutomaton {
     vector<State> states;
 
     SuffixAutomaton() : last(0) { clear(); }
-    SuffixAutomaton(const string& s) { init(s); }
+    SuffixAutomaton(const T& s) { init(s); }
 
-    void add_letter(char c) {
+    void add_letter(G c) {
         if(states[last].to.count(c)) {
             int clone = check_replace_with_clone(last, c);
             last = clone;
@@ -59,7 +64,7 @@ class SuffixAutomaton {
         states[last].link = q_or_clone;
     }
 
-    void add_string(const string& s) {
+    void add_string(const T& s) {
         last = 0;
         for(char c: s) {
             add_letter(c);
@@ -72,7 +77,7 @@ class SuffixAutomaton {
         last = 0;
     }
 
-    void init(const string& s) {
+    void init(const T& s) {
         clear();
         add_string(s);
     }

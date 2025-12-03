@@ -42,15 +42,15 @@ class StronglyConnectedComponents {
         n = _n;
         comp_ids.clear();
         top_sort.clear();
-        adj.assign(n + 1, {});
-        radj.assign(n + 1, {});
+        adj.assign(n, {});
+        radj.assign(n, {});
     }
 
-    void solve() {
-        comp.assign(n + 1, -1);
-        visited.assign(n + 1, false);
+    void find_components() {
+        comp.assign(n, -1);
+        visited.assign(n, false);
 
-        for(int i = 1; i <= n; i++) {
+        for(int i = 0; i < n; i++) {
             if(!visited[i]) {
                 dfs1(i);
             }

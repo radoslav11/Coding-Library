@@ -64,3 +64,5 @@ class LCAUtilsRMQ {
 
     int dist(int u, int v) { return dep[u] + dep[v] - 2 * dep[lca(u, v)]; }
 };
+
+using LcaUtils = LCAUtilsRMQ;

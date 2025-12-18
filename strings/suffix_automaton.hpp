@@ -89,4 +89,12 @@ class SuffixAutomaton {
         }
         return adj;
     }
+
+    vector<vector<int>> states_by_length() {
+        vector<vector<int>> ret(states.size()); 
+        for(int i = 0; i < (int)states.size(); i++) {
+            ret[states[i].len].push_back(i);
+        }
+        return ret;
+    }
 };

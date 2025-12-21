@@ -16,9 +16,9 @@ class SegmentTree {
   public:
     SegmentTree() { init(vector<T>()); }
     SegmentTree(int _n) { init(vector<T>(_n, e())); }
-    SegmentTree(const vector<T> &_a) { init(_a); }
+    SegmentTree(const vector<T>& _a) { init(_a); }
 
-    void init(const vector<T> &_a) {
+    void init(const vector<T>& _a) {
         n = _a.size();
         size = 1;
         while(size < n) {

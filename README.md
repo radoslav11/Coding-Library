@@ -12,3 +12,6 @@ Useful ideas, that aren't exactly a part of this library.
 1) Bitset for almost arbitrary N:
 - https://codeforces.com/blog/entry/100910?#comment-896093
 - https://codeforces.com/problemsets/acmsguru/problem/99999/415
+
+2) MiniSat based SAT solver that can be used in competitive programming:
+- https://github.com/togatoga/togasat?tab=readme-ov-file

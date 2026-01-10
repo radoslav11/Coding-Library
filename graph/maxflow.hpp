@@ -36,13 +36,13 @@ class MaxFlow {
         return dist[t] != -1;
     }
 
-    T dfs(int u, int t, T fl = INF) {
+    T dfs(int u, int t, T fl = inf) {
         if(u == t) {
             return fl;
         }
 
         for(; po[u] < (int)adj[u].size(); po[u]++) {
-            auto &e = adj[u][po[u]];
+            auto& e = adj[u][po[u]];
             if(dist[e.to] == dist[u] + 1 && e.flow < e.cap) {
                 T f = dfs(e.to, t, min(fl, e.cap - e.flow));
                 e.flow += f;
@@ -57,11 +57,9 @@ class MaxFlow {
     }
 
   public:
-    const static T INF = numeric_limits<T>::max();
+    constexpr static T inf = numeric_limits<T>::max();
 
-    MaxFlow(int n = 0) {
-        init(n);
-    }
+    MaxFlow(int n = 0) { init(n); }
 
     vector<vector<Edge>> adj;
 

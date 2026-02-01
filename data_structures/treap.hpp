@@ -122,6 +122,7 @@ struct TreapNode {
             return_data = tmp->data;
             if(delete_node) {
                 delete tmp;
+                return_data = nullptr;
             }
         } else {
             return_data =
@@ -191,7 +192,7 @@ class Treap {
         insert_in(root, new_node);
     }
 
-    void erase(KeyT key) { return erase_from(root, key); }
+    Node* erase(KeyT key) { return erase_from(root, key); }
 
     friend Treap<KeyT, T, merge_func> merge_treaps(
         Treap<KeyT, T, merge_func> l, Treap<KeyT, T, merge_func> r
@@ -199,6 +200,20 @@ class Treap {
         Treap<KeyT, T, merge_func> res;
         res.root = unordered_merge(l.root, r.root);
         return res;
+    }
+
+    int count_leq(KeyT max_key) {
+        int cnt = 0;
+        Node* cur = root;
+        while(cur) {
+            if(cur->key <= max_key) {
+                cnt += (cur->left ? cur->left->size : 0) + 1;
+                cur = cur->right;
+            } else {
+                cur = cur->left;
+            }
+        }
+        return cnt;
     }
 };
 

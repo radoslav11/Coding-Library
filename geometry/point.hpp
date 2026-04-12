@@ -155,6 +155,30 @@ struct Point {
         }
         return {mid + perp_dir * h, mid - perp_dir * h};
     }
+
+    friend optional<Point> intersect_ray_segment(
+        const Point& ray_start, const Point& ray_through, const Point& seg_a,
+        const Point& seg_b
+    ) {
+        Point ray_dir = ray_through - ray_start;
+        if(ray_dir.norm2() < Point::eps) {
+            return {};
+        }
+        Point seg_dir = seg_b - seg_a;
+        coord_t denom = ray_dir ^ seg_dir;
+        if(fabs(denom) < eps) {
+            return {};
+        }
+        coord_t t = ((seg_a - ray_start) ^ seg_dir) / denom;
+        if(t < eps) {
+            return {};
+        }
+        coord_t s = ((seg_a - ray_start) ^ ray_dir) / denom;
+        if(s < eps || s > 1 - eps) {
+            return {};
+        }
+        return ray_start + ray_dir * t;
+    }
 };
 
 #endif  // POINT_HPP

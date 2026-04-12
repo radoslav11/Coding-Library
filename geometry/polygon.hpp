@@ -13,6 +13,8 @@ class Polygon {
     Polygon(const vector<Point>& points) : points(points) {}
 
     int size() const { return points.size(); }
+    const Point& operator[](int i) const { return points[i]; }
+    Point& operator[](int i) { return points[i]; }
 
     coord_t area() const {
         coord_t a = 0;
@@ -72,7 +74,8 @@ class PointInConvexPolygon {
 
 class ConvexHull : public Polygon {
   public:
-    int upper_hull_size;
+    int lower_end;
+    vector<Point> lower, upper;
 
     ConvexHull(const vector<Point>& points) {
         this->points = points;
@@ -82,7 +85,12 @@ class ConvexHull : public Polygon {
         );
 
         if(this->points.size() <= 2) {
-            this->upper_hull_size = this->points.size();
+            lower_end = (int)this->points.size() - 1;
+            lower = this->points;
+            upper = {this->points.back()};
+            if(this->points.size() > 1) {
+                upper.push_back(this->points.front());
+            }
             return;
         }
 
@@ -104,20 +112,76 @@ class ConvexHull : public Polygon {
             expand_hull(i, 2);
         }
 
-        upper_hull_size = hull.size();
+        int uhs = hull.size();
         for(int i = (int)this->points.size() - 2; i >= 0; i--) {
             if(!used[i]) {
-                expand_hull(i, upper_hull_size + 1);
+                expand_hull(i, uhs + 1);
             }
         }
 
         hull.pop_back();
 
-        vector<Point> points_in_hull;
+        vector<Point> pts;
         for(int i: hull) {
-            points_in_hull.push_back(this->points[i]);
+            pts.push_back(this->points[i]);
         }
-        this->points = std::move(points_in_hull);
+        reverse(pts.begin(), pts.end());
+        this->points = std::move(pts);
+
+        lower_end = size() - uhs;
+        lower.assign(
+            this->points.begin(), this->points.begin() + lower_end + 1
+        );
+        upper.assign(this->points.begin() + lower_end, this->points.end());
+        upper.push_back(this->points[0]);
+    }
+
+    pair<int, int> tangents_from(const Point& p) const {
+        int n = size();
+        if(n <= 1) {
+            return {0, 0};
+        }
+
+        int a = 0, b = 0;
+        auto update = [&](int id) {
+            id %= n;
+            if(ccw(p, points[a], points[id]) > 0) {
+                a = id;
+            }
+            if(ccw(p, points[b], points[id]) < 0) {
+                b = id;
+            }
+        };
+
+        auto bin_search = [&](int low, int high) {
+            if(low >= high) {
+                return;
+            }
+            update(low);
+            int sl = ccw(p, points[low % n], points[(low + 1) % n]);
+            while(low + 1 < high) {
+                int mid = (low + high) / 2;
+                if(ccw(p, points[mid % n], points[(mid + 1) % n]) == sl) {
+                    low = mid;
+                } else {
+                    high = mid;
+                }
+            }
+            update(high);
+        };
+
+        int lid =
+            (int)(lower_bound(lower.begin(), lower.end(), p) - lower.begin());
+        bin_search(0, lid);
+        bin_search(lid, (int)lower.size() - 1);
+
+        int uid =
+            (int)(lower_bound(upper.begin(), upper.end(), p, greater<Point>()) -
+                  upper.begin());
+        int base = lower_end;
+        bin_search(base, base + uid);
+        bin_search(base + uid, base + (int)upper.size() - 1);
+        return {a, b};
     }
 };
 

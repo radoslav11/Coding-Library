@@ -6,7 +6,7 @@ using namespace std;
 template<typename T>
 class MinCostFlow {
   private:
-    const static T INF = numeric_limits<T>::max();
+    const static T inf = numeric_limits<T>::max();
 
     struct Edge {
         int to, rev;
@@ -26,14 +26,14 @@ class MinCostFlow {
     vector<pair<T, T>> dist;
 
     void build_potential(int source) {
-        fill(potential.begin(), potential.end(), INF);
+        fill(potential.begin(), potential.end(), inf);
         potential[source] = 0;
 
         while(true) {
             bool any = false;
             for(int v = 0; v < n; v++) {
                 for(const auto& e: g[v]) {
-                    if(e.capacity != 0 && potential[v] != INF &&
+                    if(e.capacity != 0 && potential[v] != inf &&
                        potential[v] + e.cost < potential[e.to]) {
                         potential[e.to] = potential[v] + e.cost;
                         any = true;
@@ -47,7 +47,7 @@ class MinCostFlow {
     }
 
     bool dijkstra(int source, int sink, T flow_limit, T flow) {
-        fill(dist.begin(), dist.end(), make_pair(INF, flow_limit - flow));
+        fill(dist.begin(), dist.end(), make_pair(inf, flow_limit - flow));
         dist[source].first = 0;
 
         priority_queue<pair<T, int>, vector<pair<T, int>>, greater<>> q;
@@ -61,7 +61,7 @@ class MinCostFlow {
             }
 
             for(const auto& e: g[v]) {
-                if(potential[e.to] != INF &&
+                if(potential[e.to] != inf &&
                    cur_dist + e.cost - potential[e.to] + potential[v] <
                        dist[e.to].first &&
                    e.flow < e.capacity) {
@@ -74,7 +74,7 @@ class MinCostFlow {
                 }
             }
         }
-        return dist[sink].first != INF;
+        return dist[sink].first != inf;
     }
 
   public:
@@ -99,7 +99,7 @@ class MinCostFlow {
         return id;
     }
 
-    pair<T, T> flow(int source, int sink, T flow_limit = INF) {
+    pair<T, T> flow(int source, int sink, T flow_limit = inf) {
         for(int v = 0; v < n; v++) {
             for(auto& e: g[v]) {
                 e.flow = 0;
@@ -121,7 +121,7 @@ class MinCostFlow {
             }
 
             for(int i = 0; i < n; i++) {
-                if(dist[i].first != INF) {
+                if(dist[i].first != inf) {
                     potential[i] += dist[i].first;
                 }
             }

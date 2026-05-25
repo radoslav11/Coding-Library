@@ -10,8 +10,6 @@ using namespace std;
 
 using coord_t = int64_t;
 
-using coord_t = int64_t;
-
 struct Point3D {
     coord_t x, y, z;
 

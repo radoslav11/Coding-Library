@@ -20,13 +20,17 @@ struct Point3D {
     Point3D operator+(const Point3D& p) const {
         return {x + p.x, y + p.y, z + p.z};
     }
+
     Point3D operator-(const Point3D& p) const {
         return {x - p.x, y - p.y, z - p.z};
     }
+
     Point3D cross(const Point3D& p) const {
         return {y * p.z - z * p.y, z * p.x - x * p.z, x * p.y - y * p.x};
     }
+
     coord_t dot(const Point3D& p) const { return x * p.x + y * p.y + z * p.z; }
+    
     bool operator==(const Point3D& p) const {
         return x == p.x && y == p.y && z == p.z;
     }
@@ -59,16 +63,19 @@ class QuickHull3D {
         if(degenerate) {
             return true;
         }
+
         for(const auto& f: faces) {
             if(!f.alive) {
                 continue;
             }
+
             if(signed_volume(
                    points[f.v[0]], points[f.v[1]], points[f.v[2]], p
                ) == 0) {
                 return true;
             }
         }
+
         return false;
     }
 
@@ -91,6 +98,7 @@ class QuickHull3D {
                 return e;
             }
         }
+
         return -1;
     }
 
@@ -108,6 +116,7 @@ class QuickHull3D {
                 break;
             }
         }
+
         if(i1 < 0) {
             degenerate = true;
             return;
@@ -117,6 +126,7 @@ class QuickHull3D {
             if(i == i1) {
                 continue;
             }
+
             Point3D c = (points[i1] - points[i0]).cross(points[i] - points[i0]);
             if(c.dot(c) > 0) {
                 i2 = i;
@@ -128,6 +138,7 @@ class QuickHull3D {
             degenerate = true;
             return;
         }
+
         for(int i = 0; i < n; i++) {
             if(i == i0 || i == i1 || i == i2) {
                 continue;
@@ -163,6 +174,7 @@ class QuickHull3D {
             if(p == i0 || p == i1 || p == i2 || p == i3) {
                 continue;
             }
+
             for(int fi = 0; fi < 4; fi++) {
                 if(above(fi, p) > 0) {
                     faces[fi].outside.push_back(p);
@@ -198,8 +210,8 @@ class QuickHull3D {
             vector<int> visible = {fi};
             vector<char> seen(faces.size(), 0);
             seen[fi] = 1;
-            vector<array<int, 4>> horizon;
 
+            vector<array<int, 4>> horizon;
             for(int idx = 0; idx < (int)visible.size(); idx++) {
                 int cur = visible[idx];
                 for(int e = 0; e < 3; e++) {

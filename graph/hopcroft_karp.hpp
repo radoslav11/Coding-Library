@@ -104,6 +104,10 @@ class HopcroftKarp {
     }
 
     pair<vector<int>, vector<int>> minimum_vertex_cover() {
+        // König: alternating-BFS from unmatched left vertices marks the
+        // reachable set Z; cover = (Left \ Z) on the left side together with
+        // (Right in Z) on the right side. Here dist[u] != -1 means u is in Z.
+
         vector<int> left_cover, right_cover;
         bfs();
 
@@ -120,6 +124,36 @@ class HopcroftKarp {
         }
 
         return {left_cover, right_cover};
+    }
+
+    pair<vector<int>, vector<int>> maximum_independent_set() {
+        // The complement of a minimum vertex cover is a maximum independent
+        // set (König), so keep exactly the vertices not in the cover.
+
+        auto [left_cover, right_cover] = minimum_vertex_cover();
+        vector<char> in_left_cover(n), in_right_cover(m);
+        for(int u: left_cover) {
+            in_left_cover[u] = 1;
+        }
+
+        for(int v: right_cover) {
+            in_right_cover[v] = 1;
+        }
+
+        vector<int> left_set, right_set;
+        for(int u = 0; u < n; u++) {
+            if(!in_left_cover[u]) {
+                left_set.push_back(u);
+            }
+        }
+
+        for(int v = 0; v < m; v++) {
+            if(!in_right_cover[v]) {
+                right_set.push_back(v);
+            }
+        }
+
+        return {left_set, right_set};
     }
 };
 

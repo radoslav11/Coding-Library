@@ -1,3 +1,6 @@
+#ifndef TWO_SAT_HPP
+#define TWO_SAT_HPP
+
 #include <bits/stdc++.h>
 using namespace std;
 
@@ -77,3 +80,5 @@ class TwoSat {
         return {true, assignment};
     }
 };
+
+#endif  // TWO_SAT_HPP

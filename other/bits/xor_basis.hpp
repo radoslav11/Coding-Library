@@ -1,3 +1,6 @@
+#ifndef XOR_BASIS_HPP
+#define XOR_BASIS_HPP
+
 #include <bits/stdc++.h>
 using namespace std;
 
@@ -119,3 +122,5 @@ class XorBasis {
         return a ^ b;
     }
 };
+
+#endif  // XOR_BASIS_HPP

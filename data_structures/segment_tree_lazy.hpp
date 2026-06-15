@@ -1,3 +1,6 @@
+#ifndef SEGMENT_TREE_LAZY_HPP
+#define SEGMENT_TREE_LAZY_HPP
+
 #include <bits/stdc++.h>
 using namespace std;
 
@@ -202,3 +205,5 @@ class SegmentTreeLazy {
         return 0;
     }
 };
+
+#endif  // SEGMENT_TREE_LAZY_HPP

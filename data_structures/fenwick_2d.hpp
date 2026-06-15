@@ -1,3 +1,6 @@
+#ifndef FENWICK_2D_HPP
+#define FENWICK_2D_HPP
+
 #include <bits/stdc++.h>
 using namespace std;
 
@@ -66,3 +69,5 @@ class Fenwick2d {
 // int identity_sum() { return 0; }
 
 // Fenwick2d<int, sum_custom, identity_sum> ft;
+
+#endif  // FENWICK_2D_HPP

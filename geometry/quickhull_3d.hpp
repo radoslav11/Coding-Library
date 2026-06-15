@@ -1,3 +1,6 @@
+#ifndef QUICKHULL_3D_HPP
+#define QUICKHULL_3D_HPP
+
 #include <bits/stdc++.h>
 using namespace std;
 
@@ -284,3 +287,5 @@ class QuickHull3D {
         }
     }
 };
+
+#endif  // QUICKHULL_3D_HPP

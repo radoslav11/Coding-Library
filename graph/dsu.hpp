@@ -1,3 +1,6 @@
+#ifndef DSU_HPP
+#define DSU_HPP
+
 #include <bits/stdc++.h>
 using namespace std;
 
@@ -43,3 +46,5 @@ class DSU {
         return comp;
     }
 };
+
+#endif  // DSU_HPP

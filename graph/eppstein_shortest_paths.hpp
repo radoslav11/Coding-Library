@@ -1,3 +1,6 @@
+#ifndef EPPSTEIN_SHORTEST_PATHS_HPP
+#define EPPSTEIN_SHORTEST_PATHS_HPP
+
 #include <bits/stdc++.h>
 #include <coding_library/data_structures/meldable_heap.hpp>
 using namespace std;
@@ -175,3 +178,5 @@ class EppsteinShortestPaths {
         return ans;
     }
 };
+
+#endif  // EPPSTEIN_SHORTEST_PATHS_HPP

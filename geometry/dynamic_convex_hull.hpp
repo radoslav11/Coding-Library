@@ -1,3 +1,6 @@
+#ifndef DYNAMIC_CONVEX_HULL_HPP
+#define DYNAMIC_CONVEX_HULL_HPP
+
 #include <bits/stdc++.h>
 #include <coding_library/geometry/point.hpp>
 using namespace std;
@@ -115,3 +118,5 @@ class DynamicConvexHull {
         return result;
     }
 };
+
+#endif  // DYNAMIC_CONVEX_HULL_HPP

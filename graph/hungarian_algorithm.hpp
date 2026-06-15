@@ -1,3 +1,6 @@
+#ifndef HUNGARIAN_ALGORITHM_HPP
+#define HUNGARIAN_ALGORITHM_HPP
+
 #include <bits/stdc++.h>
 using namespace std;
 
@@ -83,3 +86,5 @@ class HungarianAlgorithm {
         return ans;
     }
 };
+
+#endif  // HUNGARIAN_ALGORITHM_HPP

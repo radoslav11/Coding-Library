@@ -1,3 +1,6 @@
+#ifndef SUFFIX_ARRAY_HPP
+#define SUFFIX_ARRAY_HPP
+
 #include <bits/stdc++.h>
 using namespace std;
 
@@ -87,3 +90,5 @@ class SuffixArray {
         build_lcp(s);
     }
 };
+
+#endif  // SUFFIX_ARRAY_HPP

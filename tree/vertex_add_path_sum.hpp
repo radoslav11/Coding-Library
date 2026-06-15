@@ -1,3 +1,6 @@
+#ifndef VERTEX_ADD_PATH_SUM_HPP
+#define VERTEX_ADD_PATH_SUM_HPP
+
 #include <bits/stdc++.h>
 #include "coding_library/data_structures/fenwick_range_update.hpp"
 #include "coding_library/tree/lca.hpp"
@@ -29,3 +32,5 @@ class VertexAddPathSum : LCAUtils {
 
     void update(int u, int x) { ft.update(in_time[u], out_time[u], x); }
 };
+
+#endif  // VERTEX_ADD_PATH_SUM_HPP

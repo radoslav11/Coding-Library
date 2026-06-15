@@ -1,3 +1,6 @@
+#ifndef BIT_TRIE_HPP
+#define BIT_TRIE_HPP
+
 #include <bits/stdc++.h>
 using namespace std;
 
@@ -50,3 +53,5 @@ class BitTrie {
         return res;
     }
 };
+
+#endif  // BIT_TRIE_HPP

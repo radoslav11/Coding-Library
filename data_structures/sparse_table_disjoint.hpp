@@ -1,3 +1,6 @@
+#ifndef SPARSE_TABLE_DISJOINT_HPP
+#define SPARSE_TABLE_DISJOINT_HPP
+
 #include <bits/stdc++.h>
 using namespace std;
 
@@ -67,3 +70,5 @@ class SparseTableDisjoint {
 
 // int min_custom(int a, int b) { return min(a, b); }
 // sparse_table_disjoint<int, min_custom> st;
+
+#endif  // SPARSE_TABLE_DISJOINT_HPP

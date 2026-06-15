@@ -1,3 +1,6 @@
+#ifndef LICHAO_DYNAMIC_CPP
+#define LICHAO_DYNAMIC_CPP
+
 #include <bits/stdc++.h>
 #define endl '\n'
 
@@ -132,3 +135,5 @@ int main()
 	solve();
 	return 0;
 }
+
+#endif  // LICHAO_DYNAMIC_CPP

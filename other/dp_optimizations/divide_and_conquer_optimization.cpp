@@ -1,3 +1,6 @@
+#ifndef DIVIDE_AND_CONQUER_OPTIMIZATION_CPP
+#define DIVIDE_AND_CONQUER_OPTIMIZATION_CPP
+
 #include <bits/stdc++.h>
 #define endl '\n'
 
@@ -74,3 +77,5 @@ void Read(int &x)
 						x = x * 10 + sir[pos_ind] - '0';
 
 }
+
+#endif  // DIVIDE_AND_CONQUER_OPTIMIZATION_CPP

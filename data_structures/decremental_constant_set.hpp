@@ -1,3 +1,6 @@
+#ifndef DECREMENTAL_CONSTANT_SET_HPP
+#define DECREMENTAL_CONSTANT_SET_HPP
+
 #include <bits/stdc++.h>
 #include <coding_library/graph/dsu.hpp>
 using namespace std;
@@ -115,3 +118,5 @@ class DecrementalConstantSet {
         return small_query_suffix(c, FULL_MASK) - 1;
     }
 };
+
+#endif  // DECREMENTAL_CONSTANT_SET_HPP

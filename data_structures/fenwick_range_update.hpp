@@ -1,3 +1,6 @@
+#ifndef FENWICK_RANGE_UPDATE_HPP
+#define FENWICK_RANGE_UPDATE_HPP
+
 #include <bits/stdc++.h>
 using namespace std;
 
@@ -37,3 +40,5 @@ class FenwickRangeUpdate {
         update(r + 1, -val);
     }
 };
+
+#endif  // FENWICK_RANGE_UPDATE_HPP

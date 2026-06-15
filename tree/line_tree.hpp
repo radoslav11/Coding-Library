@@ -1,3 +1,6 @@
+#ifndef LINE_TREE_HPP
+#define LINE_TREE_HPP
+
 #include <bits/stdc++.h>
 #include <coding_library/graph/dsu.hpp>
 #include <coding_library/tree/lca_sparse_table.hpp>
@@ -58,3 +61,5 @@ class LineTree {
 
     int min_node(int u, int v) { return helper_lca.lca(u, v); }
 };
+
+#endif  // LINE_TREE_HPP

@@ -1,3 +1,6 @@
+#ifndef MO_CPP
+#define MO_CPP
+
 #include <bits/stdc++.h>
 #define endl '\n'
 
@@ -87,3 +90,5 @@ int main()
 	return 0;
 }
 
+
+#endif  // MO_CPP

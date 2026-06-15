@@ -1,3 +1,6 @@
+#ifndef LINK_CUT_TREE_HPP
+#define LINK_CUT_TREE_HPP
+
 #include <bits/stdc++.h>
 using namespace std;
 
@@ -335,3 +338,5 @@ class LinkCutTree {
         pull(node);
     }
 };
+
+#endif  // LINK_CUT_TREE_HPP

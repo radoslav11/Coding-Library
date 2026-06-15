@@ -1,3 +1,6 @@
+#ifndef TREAP_HPP
+#define TREAP_HPP
+
 #include <bits/stdc++.h>
 using namespace std;
 
@@ -253,3 +256,5 @@ class Treap {
 //         t->data.first); t->right = t_right; t->pull(); return {t, new_right};
 //     }
 // }
+
+#endif  // TREAP_HPP

@@ -1,3 +1,6 @@
+#ifndef SCC_HPP
+#define SCC_HPP
+
 #include <bits/stdc++.h>
 using namespace std;
 
@@ -66,3 +69,5 @@ class StronglyConnectedComponents {
         }
     }
 };
+
+#endif  // SCC_HPP

@@ -1,3 +1,6 @@
+#ifndef CENTROID_DECOMPOSITION_HPP
+#define CENTROID_DECOMPOSITION_HPP
+
 #include <bits/stdc++.h>
 using namespace std;
 
@@ -116,3 +119,5 @@ class CentroidDecomposition {
 //         cen_root = cd.link[cen_root];
 //     }
 // };
+
+#endif  // CENTROID_DECOMPOSITION_HPP

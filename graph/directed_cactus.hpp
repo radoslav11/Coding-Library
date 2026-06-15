@@ -1,3 +1,6 @@
+#ifndef DIRECTED_CACTUS_HPP
+#define DIRECTED_CACTUS_HPP
+
 #include <bits/stdc++.h>
 using namespace std;
 
@@ -79,3 +82,5 @@ class DirectedCactus {
         return -1;
     }
 };
+
+#endif  // DIRECTED_CACTUS_HPP

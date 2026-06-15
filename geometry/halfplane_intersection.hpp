@@ -1,3 +1,6 @@
+#ifndef HALFPLANE_INTERSECTION_HPP
+#define HALFPLANE_INTERSECTION_HPP
+
 #include <bits/stdc++.h>
 #include <coding_library/geometry/point.hpp>
 
@@ -93,3 +96,5 @@ class HalfPlaneIntersection {
         return result;
     }
 };
+
+#endif  // HALFPLANE_INTERSECTION_HPP

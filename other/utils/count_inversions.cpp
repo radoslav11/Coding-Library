@@ -1,3 +1,6 @@
+#ifndef COUNT_INVERSIONS_CPP
+#define COUNT_INVERSIONS_CPP
+
 #include <bits/stdc++.h>
 using namespace std;
 
@@ -26,3 +29,5 @@ int64_t count_inversions(int *start, int *end) {
     copy(temp.begin(), temp.end(), start);
     return ans;
 }
+
+#endif  // COUNT_INVERSIONS_CPP

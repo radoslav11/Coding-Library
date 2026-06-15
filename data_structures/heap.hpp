@@ -1,3 +1,6 @@
+#ifndef HEAP_HPP
+#define HEAP_HPP
+
 #include <bits/stdc++.h>
 using namespace std;
 
@@ -82,3 +85,5 @@ class Heap {
     }
 };
 
+
+#endif  // HEAP_HPP

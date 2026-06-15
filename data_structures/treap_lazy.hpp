@@ -1,3 +1,6 @@
+#ifndef TREAP_LAZY_HPP
+#define TREAP_LAZY_HPP
+
 #include <bits/stdc++.h>
 using namespace std;
 
@@ -297,3 +300,5 @@ class Treap {
 // Tested on https://codeforces.com/contest/702/problem/F.
 // https://codeforces.com/contest/702/submission/283296920
 // https://codeforces.com/problemsets/acmsguru/submission/99999/294488144
+
+#endif  // TREAP_LAZY_HPP

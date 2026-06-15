@@ -1,3 +1,6 @@
+#ifndef MINCOST_FLOW_HPP
+#define MINCOST_FLOW_HPP
+
 #include <bits/stdc++.h>
 using namespace std;
 
@@ -129,3 +132,5 @@ class MinCostFlow {
         return {cost, flow};
     }
 };
+
+#endif  // MINCOST_FLOW_HPP

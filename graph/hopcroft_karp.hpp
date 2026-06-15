@@ -1,3 +1,6 @@
+#ifndef HOPCROFT_KARP_HPP
+#define HOPCROFT_KARP_HPP
+
 #include <bits/stdc++.h>
 using namespace std;
 
@@ -158,3 +161,5 @@ class HopcroftKarp {
 };
 
 using BipartiteMatching = HopcroftKarp;
+
+#endif  // HOPCROFT_KARP_HPP

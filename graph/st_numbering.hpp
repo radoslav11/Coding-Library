@@ -1,3 +1,6 @@
+#ifndef ST_NUMBERING_HPP
+#define ST_NUMBERING_HPP
+
 #include <bits/stdc++.h>
 using namespace std;
 
@@ -126,3 +129,5 @@ class STNumbering {
         return true;
     }
 };
+
+#endif  // ST_NUMBERING_HPP

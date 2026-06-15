@@ -1,3 +1,6 @@
+#ifndef SEGMENT_TREE_HPP
+#define SEGMENT_TREE_HPP
+
 #include <bits/stdc++.h>
 using namespace std;
 
@@ -128,3 +131,5 @@ class SegmentTree {
 // int min_e() { return INT_MAX; }
 // int max_custom(int a, int b) { return max(a, b); }
 // int max_e() { return INT_MIN; }
+
+#endif  // SEGMENT_TREE_HPP

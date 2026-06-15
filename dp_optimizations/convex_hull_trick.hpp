@@ -1,3 +1,6 @@
+#ifndef CONVEX_HULL_TRICK_HPP
+#define CONVEX_HULL_TRICK_HPP
+
 #include <bits/stdc++.h>
 using namespace std;
 
@@ -64,3 +67,5 @@ class ConvexHullTrick {
         return res;
     }
 };
+
+#endif  // CONVEX_HULL_TRICK_HPP

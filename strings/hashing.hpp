@@ -1,3 +1,6 @@
+#ifndef HASHING_HPP
+#define HASHING_HPP
+
 #include <bits/stdc++.h>
 using namespace std;
 
@@ -113,3 +116,5 @@ class HashMeta {
 
 // HashMeta hash_meta;
 // using hash_t = HashMeta::hash_t;
+
+#endif  // HASHING_HPP

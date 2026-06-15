@@ -1,3 +1,6 @@
+#ifndef SLOPE_TRICK_PRIORITY_QUEUE_CPP
+#define SLOPE_TRICK_PRIORITY_QUEUE_CPP
+
 #include <bits/stdc++.h>
 #define endl '\n'
 
@@ -126,3 +129,5 @@ int main() {
 	return 0;
 }
 
+
+#endif  // SLOPE_TRICK_PRIORITY_QUEUE_CPP

@@ -1,3 +1,6 @@
+#ifndef DIJKSTRA_VLOG_HPP
+#define DIJKSTRA_VLOG_HPP
+
 #include <bits/stdc++.h>
 #include <coding_library/data_structures/heap.hpp>
 
@@ -35,3 +38,5 @@ vector<T> dijkstra(int src, const vector<vector<pair<int, T>>>& adj) {
 
     return dist;
 }
+
+#endif  // DIJKSTRA_VLOG_HPP

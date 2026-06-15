@@ -1,3 +1,6 @@
+#ifndef SUFFIX_AUTOMATON_HPP
+#define SUFFIX_AUTOMATON_HPP
+
 #include <bits/stdc++.h>
 using namespace std;
 
@@ -98,3 +101,5 @@ class SuffixAutomaton {
         return ret;
     }
 };
+
+#endif  // SUFFIX_AUTOMATON_HPP

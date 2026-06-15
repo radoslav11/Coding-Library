@@ -1,3 +1,6 @@
+#ifndef BIPARTITE_COLORING_HPP
+#define BIPARTITE_COLORING_HPP
+
 #include <bits/stdc++.h>
 #include <coding_library/graph/hopcroft_karp.hpp>
 using namespace std;
@@ -271,3 +274,5 @@ class BipartiteColoring {
         return colour_num_subgraph_0 + colour_num_subgraph_1;
     }
 };
+
+#endif  // BIPARTITE_COLORING_HPP

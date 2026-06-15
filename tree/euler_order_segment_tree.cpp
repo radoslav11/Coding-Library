@@ -1,3 +1,6 @@
+#ifndef EULER_ORDER_SEGMENT_TREE_CPP
+#define EULER_ORDER_SEGMENT_TREE_CPP
+
 #include <bits/stdc++.h>
 using namespace std;
 template<class T, class T1>
@@ -151,3 +154,5 @@ int main() {
     solve();
     return 0;
 }
+
+#endif  // EULER_ORDER_SEGMENT_TREE_CPP

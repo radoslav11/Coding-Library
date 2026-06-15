@@ -1,3 +1,6 @@
+#ifndef COMPRESSED_FENWICK_HPP
+#define COMPRESSED_FENWICK_HPP
+
 #include <bits/stdc++.h>
 #include <coding_library/data_structures/fenwick.hpp>
 using namespace std;
@@ -22,3 +25,5 @@ struct CompressedFenwick {
     T query(int x) { return t.query(get_idx(x) - 1); }
     T size() { return t.query(t.sz); }
 };
+
+#endif  // COMPRESSED_FENWICK_HPP

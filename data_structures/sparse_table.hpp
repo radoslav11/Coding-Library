@@ -1,3 +1,6 @@
+#ifndef SPARSE_TABLE_HPP
+#define SPARSE_TABLE_HPP
+
 #include <bits/stdc++.h>
 using namespace std;
 
@@ -40,3 +43,5 @@ class SparseTable {
 
 // int min_custom(int a, int b) { return min(a, b); }
 // SparseTable<int, min_custom> tbl;
+
+#endif  // SPARSE_TABLE_HPP

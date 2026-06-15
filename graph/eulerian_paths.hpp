@@ -1,3 +1,6 @@
+#ifndef EULERIAN_PATHS_HPP
+#define EULERIAN_PATHS_HPP
+
 #include <bits/stdc++.h>
 using namespace std;
 
@@ -127,3 +130,5 @@ class EulerianPaths {
         return start == end;
     }
 };
+
+#endif  // EULERIAN_PATHS_HPP

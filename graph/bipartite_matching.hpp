@@ -1,3 +1,6 @@
+#ifndef BIPARTITE_MATCHING_HPP
+#define BIPARTITE_MATCHING_HPP
+
 #include <bits/stdc++.h>
 using namespace std;
 
@@ -105,3 +108,5 @@ class BipartiteMatching {
         return res;
     }
 };
+
+#endif  // BIPARTITE_MATCHING_HPP

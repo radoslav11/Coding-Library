@@ -1,3 +1,6 @@
+#ifndef CLEVER_ADDING_INTERVALS_SET_HPP
+#define CLEVER_ADDING_INTERVALS_SET_HPP
+
 #include <bits/stdc++.h>
 using namespace std;
 
@@ -42,3 +45,5 @@ struct clever_set {
         return ret;
     }
 };
+
+#endif  // CLEVER_ADDING_INTERVALS_SET_HPP

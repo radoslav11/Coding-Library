@@ -1,3 +1,6 @@
+#ifndef FENWICK_RANGE_UPDATE_RANGE_QUERY_HPP
+#define FENWICK_RANGE_UPDATE_RANGE_QUERY_HPP
+
 #include <bits/stdc++.h>
 #include "coding_library/data_structures/fenwick_range_update.hpp"
 using namespace std;
@@ -22,3 +25,5 @@ class FenwickRangeUpdateRangeQuery {
     T query(int idx) { return t0.query(idx) * (T)idx + t1.query(idx); }
     T query(int l, int r) { return query(r) - query(l - 1); }
 };
+
+#endif  // FENWICK_RANGE_UPDATE_RANGE_QUERY_HPP

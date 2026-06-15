@@ -1,3 +1,6 @@
+#ifndef AHO_CORASICK_HPP
+#define AHO_CORASICK_HPP
+
 #include <bits/stdc++.h>
 using namespace std;
 
@@ -91,3 +94,5 @@ class AhoCorasick {
         return adj;
     }
 };
+
+#endif  // AHO_CORASICK_HPP

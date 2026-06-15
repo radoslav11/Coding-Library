@@ -1,3 +1,6 @@
+#ifndef SET_LAZY_HPP
+#define SET_LAZY_HPP
+
 #include <bits/stdc++.h>
 using namespace std;
 
@@ -94,3 +97,5 @@ class SetLazy : private Container<T> {
 SetLazy<int> multiset_lazy // Uses multiset by default
 SetLazy<int, std::set> set_lazy; // Uses set explicitly
 */
+
+#endif  // SET_LAZY_HPP

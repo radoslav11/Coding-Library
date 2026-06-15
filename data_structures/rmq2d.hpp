@@ -1,3 +1,6 @@
+#ifndef RMQ2D_HPP
+#define RMQ2D_HPP
+
 #include <bits/stdc++.h>
 using namespace std;
 
@@ -98,3 +101,5 @@ struct rmq2d {
         return get(0, 0, n, l1, r1, l2, r2);
     }
 };
+
+#endif  // RMQ2D_HPP

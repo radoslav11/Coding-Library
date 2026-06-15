@@ -1,3 +1,6 @@
+#ifndef OFFLINE_CENTROID_QUERIES_CPP
+#define OFFLINE_CENTROID_QUERIES_CPP
+
 // This is from https://codeforces.com/contest/1902/problem/F
 
 #include <bits/stdc++.h>
@@ -277,3 +280,5 @@ int main() {
 
     return 0;
 }
+
+#endif  // OFFLINE_CENTROID_QUERIES_CPP

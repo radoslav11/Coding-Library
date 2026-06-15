@@ -1,3 +1,6 @@
+#ifndef GRAPH_HPP
+#define GRAPH_HPP
+
 #include <bits/stdc++.h>
 #include <coding_library/graph/dsu.hpp>
 using namespace std;
@@ -65,3 +68,5 @@ class UndirectedGraph {
         return dsu;
     }
 };
+
+#endif  // GRAPH_HPP

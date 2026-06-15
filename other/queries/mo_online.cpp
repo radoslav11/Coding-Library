@@ -1,3 +1,6 @@
+#ifndef MO_ONLINE_CPP
+#define MO_ONLINE_CPP
+
 #include <bits/stdc++.h>
 #define endl '\n'
 
@@ -131,3 +134,5 @@ int main()
 	solve();
 	return 0;
 }
+
+#endif  // MO_ONLINE_CPP

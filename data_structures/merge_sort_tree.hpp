@@ -1,3 +1,6 @@
+#ifndef MERGE_SORT_TREE_HPP
+#define MERGE_SORT_TREE_HPP
+
 #include <bits/stdc++.h>
 using namespace std;
 
@@ -66,3 +69,5 @@ class MergeSortTree {
 // int sum_merge(int a, int b) { return a + b; }
 // using CountTreap = Treap<int, int, sum_merge>;
 // MergeSortTree<CountTreap> st;
+
+#endif  // MERGE_SORT_TREE_HPP

@@ -1,3 +1,6 @@
+#ifndef MO_DSU_CPP
+#define MO_DSU_CPP
+
 #include <bits/stdc++.h>
 #define endl '\n'
  
@@ -198,3 +201,5 @@ int main()
 	solve();
 	return 0;
 }
+
+#endif  // MO_DSU_CPP

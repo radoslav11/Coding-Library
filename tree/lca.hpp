@@ -1,3 +1,6 @@
+#ifndef LCA_HPP
+#define LCA_HPP
+
 #include <bits/stdc++.h>
 using namespace std;
 
@@ -81,3 +84,5 @@ class LCAUtils {
         return in_time[u] <= in_time[v] && out_time[v] <= out_time[u];
     }
 };
+
+#endif  // LCA_HPP

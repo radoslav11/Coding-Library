@@ -1,3 +1,6 @@
+#ifndef WAVELET_TREE_HPP
+#define WAVELET_TREE_HPP
+
 #include <bits/stdc++.h>
 using namespace std;
 
@@ -81,3 +84,5 @@ class WaveletTree {
         return right->count(l - lb, r - rb, k);
     }
 };
+
+#endif  // WAVELET_TREE_HPP

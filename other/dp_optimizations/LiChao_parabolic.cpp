@@ -1,3 +1,6 @@
+#ifndef LICHAO_PARABOLIC_CPP
+#define LICHAO_PARABOLIC_CPP
+
 #include <bits/stdc++.h>
 #define endl '\n'
 
@@ -111,3 +114,5 @@ int main()
 	solve();
 	return 0;
 }
+
+#endif  // LICHAO_PARABOLIC_CPP

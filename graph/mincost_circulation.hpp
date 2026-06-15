@@ -1,3 +1,6 @@
+#ifndef MINCOST_CIRCULATION_HPP
+#define MINCOST_CIRCULATION_HPP
+
 #include <bits/stdc++.h>
 using namespace std;
 
@@ -136,3 +139,5 @@ class MinCostCirculation {
 
     const Edge& get_edge(int id) const { return edges[id]; }
 };
+
+#endif  // MINCOST_CIRCULATION_HPP

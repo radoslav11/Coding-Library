@@ -1,3 +1,6 @@
+#ifndef CONVEX_HULL_TRICK_MAX_CPP
+#define CONVEX_HULL_TRICK_MAX_CPP
+
 #include <bits/stdc++.h>
 #define endl '\n'
 
@@ -121,3 +124,5 @@ int main()
 	return 0;
 }
 
+
+#endif  // CONVEX_HULL_TRICK_MAX_CPP

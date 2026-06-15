@@ -1,3 +1,6 @@
+#ifndef MAXFLOW_HPP
+#define MAXFLOW_HPP
+
 #include <bits/stdc++.h>
 using namespace std;
 
@@ -88,3 +91,5 @@ class MaxFlow {
         return ret;
     }
 };
+
+#endif  // MAXFLOW_HPP

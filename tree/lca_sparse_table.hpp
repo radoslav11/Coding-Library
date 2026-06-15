@@ -1,3 +1,6 @@
+#ifndef LCA_SPARSE_TABLE_HPP
+#define LCA_SPARSE_TABLE_HPP
+
 #include <bits/stdc++.h>
 #include <coding_library/data_structures/sparse_table.hpp>
 using namespace std;
@@ -66,3 +69,5 @@ class LCAUtilsRMQ {
 };
 
 using LcaUtils = LCAUtilsRMQ;
+
+#endif  // LCA_SPARSE_TABLE_HPP

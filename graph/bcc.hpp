@@ -1,3 +1,6 @@
+#ifndef BCC_HPP
+#define BCC_HPP
+
 #include <bits/stdc++.h>
 
 using namespace std;
@@ -92,3 +95,5 @@ class biconnected_components {
 //         bcc.add_edge(u, v);
 //     }
 // }
+
+#endif  // BCC_HPP

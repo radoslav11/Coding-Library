@@ -1,3 +1,6 @@
+#ifndef LICHAO_SEGMENT_TREE_OFFLINE_CPP
+#define LICHAO_SEGMENT_TREE_OFFLINE_CPP
+
 #include <bits/stdc++.h>
 #define endl '\n'
 
@@ -160,3 +163,5 @@ int main()
 	solve();
 	return 0;
 }
+
+#endif  // LICHAO_SEGMENT_TREE_OFFLINE_CPP

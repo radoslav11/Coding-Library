@@ -1,3 +1,6 @@
+#ifndef GAUSS_BITSET_HPP
+#define GAUSS_BITSET_HPP
+
 #include <bits/stdc++.h>
 using namespace std;
 
@@ -77,3 +80,5 @@ class GaussBitset {
         return x;
     }
 };
+
+#endif  // GAUSS_BITSET_HPP

@@ -1,3 +1,6 @@
+#ifndef VIRTUAL_TREE_HPP
+#define VIRTUAL_TREE_HPP
+
 #include <bits/stdc++.h>
 #include <coding_library/tree/lca.hpp>
 using namespace std;
@@ -57,3 +60,5 @@ class VirtualTree : public LCAUtils {
         return {virtual_adj, vec};
     }
 };
+
+#endif  // VIRTUAL_TREE_HPP

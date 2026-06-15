@@ -1,3 +1,6 @@
+#ifndef MONOIDS_LAZY_HPP
+#define MONOIDS_LAZY_HPP
+
 #include <bits/stdc++.h>
 using namespace std;
 
@@ -183,3 +186,5 @@ class MonoidSumArithmeticProgression {
 //     MonoidSumArithmeticProgression<int64_t>::lazy_apply,
 //     MonoidSumArithmeticProgression<int64_t>::lazy_merge,
 //     MonoidSumArithmeticProgression<int64_t>::lazy_init>
+
+#endif  // MONOIDS_LAZY_HPP

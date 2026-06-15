@@ -1,3 +1,6 @@
+#ifndef MELDABLE_HEAP_HPP
+#define MELDABLE_HEAP_HPP
+
 #include <bits/stdc++.h>
 using namespace std;
 
@@ -96,3 +99,5 @@ class MeldableHeap {
         return top() < other.top();
     }
 };
+
+#endif  // MELDABLE_HEAP_HPP

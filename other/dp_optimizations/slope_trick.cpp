@@ -1,3 +1,6 @@
+#ifndef SLOPE_TRICK_CPP
+#define SLOPE_TRICK_CPP
+
 #include <bits/stdc++.h>
 #define endl '\n'
 
@@ -134,3 +137,5 @@ int main() {
 	return 0;
 }
 
+
+#endif  // SLOPE_TRICK_CPP

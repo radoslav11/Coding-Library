@@ -1,3 +1,6 @@
+#ifndef NONINTERSECTING_RANGE_TREE_HPP
+#define NONINTERSECTING_RANGE_TREE_HPP
+
 #include <bits/stdc++.h>
 using namespace std;
 
@@ -72,3 +75,5 @@ class NonintersectingRangeTree {
 
     int get_parent(int x) { return par[par_idx[x]]; }
 };
+
+#endif  // NONINTERSECTING_RANGE_TREE_HPP

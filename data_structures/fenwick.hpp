@@ -1,3 +1,6 @@
+#ifndef FENWICK_HPP
+#define FENWICK_HPP
+
 #include <bits/stdc++.h>
 using namespace std;
 
@@ -46,3 +49,5 @@ class Fenwick {
         return idx + 1;
     }
 };
+
+#endif  // FENWICK_HPP

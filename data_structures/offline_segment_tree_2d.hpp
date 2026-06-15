@@ -1,3 +1,6 @@
+#ifndef OFFLINE_SEGMENT_TREE_2D_HPP
+#define OFFLINE_SEGMENT_TREE_2D_HPP
+
 #include <bits/stdc++.h>
 #include <coding_library/data_structures/fenwick.hpp>
 
@@ -93,3 +96,5 @@ class OfflineSegmentTree2d {
         return query_rec(1, 1, n, xl, xr, yl, yr);
     }
 };
+
+#endif  // OFFLINE_SEGMENT_TREE_2D_HPP

@@ -91,4 +91,28 @@ class SuffixArray {
     }
 };
 
+// lcp[] is only the LCP of ADJACENT suffixes in sorted order. For the LCP of
+// two arbitrary suffixes, RMQ over lcp between their ranks (pair with
+// data_structures/sparse_table.hpp). This also gives O(1) lexicographic
+// comparison of any two substrings.
+//
+//   int min_int(int a, int b) { return min(a, b); }
+//
+//   SuffixArray<string> sa(s);
+//   SparseTable<int, min_int> rmq;
+//   rmq.init(sa.lcp);                  // query is inclusive; lcp[0] never hit
+//
+//   auto lcp_suffix = [&](int i, int j) {        // LCP of suffixes i and j (i != j)
+//       int ri = sa.rnk[i], rj = sa.rnk[j];
+//       if(ri > rj) { swap(ri, rj); }
+//       return rmq.query(ri + 1, rj);            // min lcp over (ri, rj]
+//   };
+//
+//   auto greater_sub = [&](int i1, int e1, int i2, int e2) {  // s[i1..e1) > s[i2..e2)?
+//       int len1 = e1 - i1, len2 = e2 - i2;
+//       int common = lcp_suffix(i1, i2);
+//       if(common >= min(len1, len2)) { return len1 > len2; } // prefix -> longer wins
+//       return sa.rnk[i1] > sa.rnk[i2];                       // else rank decides
+//   };
+
 #endif  // SUFFIX_ARRAY_HPP

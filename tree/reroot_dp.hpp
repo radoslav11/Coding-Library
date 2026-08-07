@@ -9,7 +9,7 @@ using namespace std;
 // merge only has to be a commutative monoid (no inverse needed). All scratch is
 // reused across the recursion, so a call allocates nothing per node.
 //
-// The Dp policy describes the DP through two types and four operations:
+// The DP policy describes the DP through two types and four operations:
 //   using Agg;                          aggregate of several child contributions
 //   using Val;                          value a subtree sends up to its parent
 //   static Agg e();                     empty aggregate (no children)
@@ -24,11 +24,11 @@ using namespace std;
 // Reuse: call init(n) once, then for each tree clear adj[1..k], re-add its
 // edges, solve(), and read answer[1..k]. Recursive; raise the stack if deep.
 
-template<class Dp>
+template<class DP>
 class RerootDP {
   public:
-    using Agg = typename Dp::Agg;
-    using Val = typename Dp::Val;
+    using Agg = typename DP::Agg;
+    using Val = typename DP::Val;
 
     int n;
     vector<vector<int>> adj;
@@ -43,8 +43,8 @@ class RerootDP {
         up.assign(n + 1, Val());
         answer.assign(n + 1, Val());
         cont.assign(n + 1, Val());
-        pref.assign(n + 2, Dp::e());
-        suf.assign(n + 2, Dp::e());
+        pref.assign(n + 2, DP::e());
+        suff.assign(n + 2, DP::e());
     }
 
     void add_edge(int u, int v) {
@@ -59,18 +59,18 @@ class RerootDP {
 
   private:
     vector<Val> cont;
-    vector<Agg> pref, suf;
+    vector<Agg> pref, suff;
 
     void pre_dfs(int v, int p) {
-        Agg acc = Dp::e();
+        Agg acc = DP::e();
         for(int u: adj[v]) {
             if(u != p) {
                 pre_dfs(u, v);
-                acc = Dp::merge(acc, Dp::single(down[u]));
+                acc = DP::merge(acc, DP::single(down[u]));
             }
         }
 
-        down[v] = Dp::finalize(acc, v);
+        down[v] = DP::finalize(acc, v);
     }
 
     void reroot_dfs(int v, int p) {
@@ -80,19 +80,20 @@ class RerootDP {
             cont[j] = u == p ? up[v] : down[u];
         }
 
-        pref[0] = suf[deg] = Dp::e();
+        pref[0] = DP::e();
+        suff[deg] = DP::e();
         for(int j = 0; j < deg; j++) {
-            pref[j + 1] = Dp::merge(pref[j], Dp::single(cont[j]));
+            pref[j + 1] = DP::merge(pref[j], DP::single(cont[j]));
         }
         for(int j = deg - 1; j >= 0; j--) {
-            suf[j] = Dp::merge(Dp::single(cont[j]), suf[j + 1]);
+            suff[j] = DP::merge(DP::single(cont[j]), suff[j + 1]);
         }
 
-        answer[v] = Dp::finalize(pref[deg], v);
+        answer[v] = DP::finalize(pref[deg], v);
         for(int j = 0; j < deg; j++) {
             int u = adj[v][j];
             if(u != p) {
-                up[u] = Dp::finalize(Dp::merge(pref[j], suf[j + 1]), v);
+                up[u] = DP::finalize(DP::merge(pref[j], suff[j + 1]), v);
             }
         }
 
@@ -108,7 +109,7 @@ class RerootDP {
 // Example: max over all roots of (1 + second largest neighbour value), the
 // static version of the rerooting in this folder's "Game on Growing Tree".
 //
-// struct SecondMaxDp {
+// struct SecondMaxDP {
 //     using Val = int;             // 1 + second largest among the other sides
 //     using Agg = pair<int, int>;  // (largest, second largest), kept ordered
 //     static Agg e() { return {0, 0}; }
@@ -122,7 +123,7 @@ class RerootDP {
 //     static Val finalize(Agg a, int) { return 1 + a.second; }
 // };
 //
-// RerootDP<SecondMaxDp> dp(n);
+// RerootDP<SecondMaxDP> dp(n);
 // for(auto [u, v]: edges) dp.add_edge(u, v);
 // dp.solve();
 // int score = *max_element(dp.answer.begin() + 1, dp.answer.end());

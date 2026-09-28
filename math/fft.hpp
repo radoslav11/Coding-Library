@@ -6,18 +6,22 @@ using namespace std;
 
 // Complex FFT for integer convolutions.
 // mult: exact convolution while |result| stays below ~1e15.
-// mult_mod: convolution modulo an arbitrary mod (up to ~1e9 + 7). Values are
-// split into pieces of base B = ceil(mod^(1/pieces)) so every intermediate is
-// exact in doubles. Default uses 2 pieces (4 FFTs): safe for random values up
-// to lengths ~1e6, but adversarial values near mod - 1 can fail past ~5e5.
-// high_precision = true uses 3 pieces (6 FFTs) and stays exact for lengths
-// ~1e6 with values near mod - 1. Roots are computed once in long double.
+// mult_mod: convolution modulo an arbitrary mod < 2^31. Values are taken in
+// (-mod / 2, mod / 2] and split into p balanced digits of base B ~ mod^(1 / p),
+// so every digit is at most ~B / 2 in absolute value.
+// Default p = 2 (4 FFTs): max rounding error ~0.13 on Library Checker
+// fft_killer tests and ~0.25 on adversarial inputs with n = m = 2^20 for mod
+// ~1e9 (~0.4 for mod ~2^31). high_precision = true uses p = 3 (6 FFTs), with
+// error < 1e-3 on all of these.
+// The forward pass is decimation in frequency (output in bit-reversed order)
+// and the backward pass decimation in time, so no bit reversal is needed.
+// Roots are precomputed once and are accurate to ~1 ulp.
 
 class FFT {
   private:
     using cd = complex<double>;
 
-    // rt[k + j] = exp(2 * pi * i * j / (2 * k)) for power of two k, j < k.
+    // rt[k + j] = exp(i * pi * j / k) for power of two k and j < k.
     inline static vector<cd> rt = {cd(1, 0), cd(1, 0)};
 
     // Plain product, avoids the slow NaN handling of std::complex.
@@ -28,126 +32,151 @@ class FFT {
         );
     }
 
+    // Each root is a product of two long double factors from tables of size
+    // ~sqrt(k), so it is accurate to ~1 ulp and cheap to build.
     static void prepare_roots(int n) {
-        if((int)rt.size() >= n) {
-            return;
-        }
-
-        int k = (int)rt.size();
-        rt.resize(n);
         const long double pi = acosl(-1);
-        for(; k < n; k <<= 1) {
+        for(int k = (int)rt.size(); k < n; k <<= 1) {
+            int s = 1;
+            while(s * s < k) {
+                s <<= 1;
+            }
+
+            vector<complex<long double>> hi(k / s), lo(s);
+            for(int j = 0; j < k / s; j++) {
+                hi[j] = polar(1.0L, pi * j * s / k);
+            }
+
+            for(int j = 0; j < s; j++) {
+                lo[j] = polar(1.0L, pi * j / k);
+            }
+
+            rt.resize(2 * k);
             for(int j = 0; j < k; j++) {
-                long double ang = pi * j / k;
-                rt[k + j] = cd((double)cosl(ang), (double)sinl(ang));
+                rt[k + j] = cd(hi[j / s] * lo[j % s]);
             }
         }
     }
 
-    // In-place forward transform, size of a must be a power of two.
-    static void fft(vector<cd>& a) {
+    // Natural order in, transform in bit-reversed order out.
+    static void dif(vector<cd>& a) {
         int n = (int)a.size();
         prepare_roots(n);
-        for(int i = 1, j = 0; i < n; i++) {
-            int bit = n >> 1;
-            for(; j & bit; bit >>= 1) {
-                j ^= bit;
-            }
-            j ^= bit;
-            if(i < j) {
-                swap(a[i], a[j]);
-            }
-        }
-
-        for(int k = 1; k < n; k <<= 1) {
+        for(int k = n >> 1; k > 0; k >>= 1) {
             for(int i = 0; i < n; i += 2 * k) {
-                for(int j = 0; j < k; j++) {
-                    cd z = mul(rt[j + k], a[i + j + k]);
-                    a[i + j + k] = a[i + j] - z;
-                    a[i + j] += z;
+                for(int j = i; j < i + k; j++) {
+                    cd u = a[j], v = a[j + k];
+                    a[j] = u + v;
+                    a[j + k] = mul(u - v, rt[k + j - i]);
                 }
             }
         }
     }
 
-    static void inv_fft(vector<cd>& a) {
+    // Bit-reversed order in, natural order out. dit(dif(a)) is n * a read at
+    // -i, so it also serves as the inverse.
+    static void dit(vector<cd>& a) {
         int n = (int)a.size();
-        reverse(a.begin() + 1, a.end());
-        fft(a);
-        for(auto& x: a) {
-            x /= n;
+        prepare_roots(n);
+        for(int k = 1; k < n; k <<= 1) {
+            for(int i = 0; i < n; i += 2 * k) {
+                for(int j = i; j < i + k; j++) {
+                    cd u = a[j], v = mul(a[j + k], rt[k + j - i]);
+                    a[j] = u + v;
+                    a[j + k] = u - v;
+                }
+            }
         }
     }
 
-    // Convolves a = sum a[s] * B^s with b = sum b[s] * B^s piecewise.
-    // Returns c[r] = sum over s + t = r of conv(a[s], b[t]), rounded.
-    static vector<vector<int64_t>> conv_pieces(
-        const vector<vector<int64_t>>& a, const vector<vector<int64_t>>& b
+    // In bit-reversed order, the position holding frequency -f for the
+    // position i holding f (mirror inside [2^t, 2^(t + 1))).
+    static int partner(int i) { return i < 2 ? i : i ^ ((1 << __lg(i)) - 1); }
+
+    // Splits x taken in (-mod / 2, mod / 2] into p balanced digits of base B,
+    // x = sum d[s] * B^s, and stores digit s as real input number id + s.
+    // Real input number id goes to f[id / 2], real part if id is even.
+    static void put_digits(
+        vector<vector<cd>>& f, const vector<int64_t>& a, int id, int p,
+        int64_t base, int64_t mod
     ) {
-        int p = (int)a.size();
-        int res_size = (int)a[0].size() + (int)b[0].size() - 1;
-        int n = 1;
+        for(int i = 0; i < (int)a.size(); i++) {
+            int64_t v = mod && a[i] > mod / 2 ? a[i] - mod : a[i];
+            for(int s = 0; s < p; s++) {
+                int64_t q = s + 1 < p ? llround((double)v / base) : 0;
+                if((id + s) & 1) {
+                    f[(id + s) / 2][i].imag(v - q * base);
+                } else {
+                    f[(id + s) / 2][i].real(v - q * base);
+                }
+                v = q;
+            }
+        }
+    }
+
+    // Convolution via p digits per value (mod = 0: p = 1, no reduction).
+    // The 2p real digit sequences are packed two per complex vector, and so
+    // are the 2p - 1 digit convolutions c[r] = sum over s + t = r of
+    // conv(a[s], b[t]). Result is sum c[r] * B^r.
+    static vector<int64_t> conv(
+        const vector<int64_t>& a, const vector<int64_t>& b, int p, int64_t mod
+    ) {
+        int res_size = (int)a.size() + (int)b.size() - 1, n = 1;
         while(n < res_size) {
             n <<= 1;
         }
 
-        // Real inputs a[0..p), b[0..p) packed two per complex vector.
-        auto real_input = [&](int id) -> const vector<int64_t>& {
-            return id < p ? a[id] : b[id - p];
-        };
-
+        int64_t base = mod ? ceil(pow((long double)mod, 1.0L / p)) : 1;
         vector<vector<cd>> f(p, vector<cd>(n));
-        for(int q = 0; q < p; q++) {
-            const auto& x = real_input(2 * q);
-            const auto& y = real_input(2 * q + 1);
-            for(int i = 0; i < (int)x.size(); i++) {
-                f[q][i].real(x[i]);
-            }
-
-            for(int i = 0; i < (int)y.size(); i++) {
-                f[q][i].imag(y[i]);
-            }
-
-            fft(f[q]);
+        put_digits(f, a, 0, p, base, mod);
+        put_digits(f, b, p, p, base, mod);
+        for(auto& v: f) {
+            dif(v);
         }
 
-        // For each pair (k, n - k) unpack spectra, multiply and repack
-        // outputs c[2q] + i * c[2q + 1] into f[q].
-        vector<cd> sa(p), sb(p), c(2 * p);
-        for(int k = 0; k <= n / 2; k++) {
-            int j = (n - k) & (n - 1);
-            for(int q = 0; q < p; q++) {
-                cd u = f[q][k], v = conj(f[q][j]);
-                cd x = (u + v) * 0.5, y = mul(u - v, cd(0, -0.5));
-                (2 * q < p ? sa[2 * q] : sb[2 * q - p]) = x;
-                (2 * q + 1 < p ? sa[2 * q + 1] : sb[2 * q + 1 - p]) = y;
+        // Unpack the digit spectra at i and -i, multiply, repack
+        // c[2q] + i * c[2q + 1] into f[q].
+        vector<cd> sp(2 * p), c(2 * p);
+        for(int i = 0; i < n; i++) {
+            int j = partner(i);
+            if(j < i) {
+                continue;
+            }
+
+            for(int id = 0; id < 2 * p; id++) {
+                cd x = f[id / 2][i], y = conj(f[id / 2][j]);
+                sp[id] = id & 1 ? mul(x - y, cd(0, -0.5)) : (x + y) * 0.5;
             }
 
             fill(c.begin(), c.end(), cd(0, 0));
             for(int s = 0; s < p; s++) {
                 for(int t = 0; t < p; t++) {
-                    c[s + t] += mul(sa[s], sb[t]);
+                    c[s + t] += mul(sp[s], sp[p + t]);
                 }
             }
 
             for(int q = 0; q < p; q++) {
-                cd lo = c[2 * q], hi = c[2 * q + 1];
-                f[q][k] = lo + cd(-hi.imag(), hi.real());
+                cd lo = c[2 * q] / (double)n, hi = c[2 * q + 1] / (double)n;
+                f[q][i] = lo + cd(-hi.imag(), hi.real());
                 f[q][j] = conj(lo) + cd(hi.imag(), hi.real());
             }
         }
 
-        vector<vector<int64_t>> res(2 * p - 1, vector<int64_t>(res_size));
-        for(int q = 0; q < p; q++) {
-            inv_fft(f[q]);
-            for(int i = 0; i < res_size; i++) {
-                res[2 * q][i] = llround(f[q][i].real());
-                if(2 * q + 1 < 2 * p - 1) {
-                    res[2 * q + 1][i] = llround(f[q][i].imag());
-                }
-            }
+        for(auto& v: f) {
+            dit(v);
         }
 
+        vector<int64_t> res(res_size);
+        for(int i = 0; i < res_size; i++) {
+            int k = (n - i) & (n - 1);
+            int64_t val = 0;
+            for(int r = 2 * p - 2; r >= 0; r--) {
+                cd z = f[r / 2][k];
+                int64_t cr = llround(r & 1 ? z.imag() : z.real());
+                val = mod ? (val * base + cr) % mod : cr;
+            }
+            res[i] = mod && val < 0 ? val + mod : val;
+        }
         return res;
     }
 
@@ -169,7 +198,7 @@ class FFT {
             return res;
         }
 
-        return conv_pieces({a}, {b})[0];
+        return conv(a, b, 1, 0);
     }
 
     // Values must be in [0, mod).
@@ -181,9 +210,8 @@ class FFT {
             return {};
         }
 
-        int res_size = (int)a.size() + (int)b.size() - 1;
         if(min((int)a.size(), (int)b.size()) <= 32) {
-            vector<int64_t> res(res_size, 0);
+            vector<int64_t> res((int)a.size() + (int)b.size() - 1, 0);
             for(int i = 0; i < (int)a.size(); i++) {
                 for(int j = 0; j < (int)b.size(); j++) {
                     res[i + j] = (res[i + j] + a[i] * b[j]) % mod;
@@ -192,51 +220,14 @@ class FFT {
             return res;
         }
 
-        const int p = high_precision ? 3 : 2;
-        int64_t base = 1;
-        while(true) {
-            int64_t pw = 1;
-            for(int s = 0; s < p; s++) {
-                pw *= base;
-            }
-
-            if(pw >= mod) {
-                break;
-            }
-            base++;
-        }
-
-        auto split = [&](const vector<int64_t>& x) {
-            vector<vector<int64_t>> pieces(p, vector<int64_t>((int)x.size()));
-            for(int i = 0; i < (int)x.size(); i++) {
-                int64_t v = x[i];
-                for(int s = 0; s < p; s++) {
-                    pieces[s][i] = v % base;
-                    v /= base;
-                }
-            }
-
-            return pieces;
-        };
-
-        auto c = conv_pieces(split(a), split(b));
-        vector<int64_t> res(res_size, 0);
-        int64_t coef = 1;
-        for(int r = 0; r < 2 * p - 1; r++) {
-            for(int i = 0; i < res_size; i++) {
-                res[i] = (res[i] + c[r][i] % mod * coef) % mod;
-            }
-            coef = coef * (base % mod) % mod;
-        }
-
-        return res;
+        return conv(a, b, high_precision ? 3 : 2, mod);
     }
 };
 
 // vector<int64_t> c = FFT::mult(a, b);                // exact, |c[i]| < ~1e15
-// vector<int64_t> c = FFT::mult_mod(a, b, mod);       // 2 pieces, 4 FFTs
-// vector<int64_t> c = FFT::mult_mod<true>(a, b, mod); // 3 pieces, 6 FFTs
-// For mult_mod, values must be in [0, mod), mod up to ~1e9 + 7. Use the
-// high precision version for long inputs (~1e6) with large values.
+// vector<int64_t> c = FFT::mult_mod(a, b, mod);       // 2 digits, 4 FFTs
+// vector<int64_t> c = FFT::mult_mod<true>(a, b, mod); // 3 digits, 6 FFTs
+// For mult_mod, values must be in [0, mod), mod < 2^31. For an exact
+// arbitrary mod convolution without doubles see NTTAnyMod in ntt.hpp.
 
 #endif  // FFT_HPP

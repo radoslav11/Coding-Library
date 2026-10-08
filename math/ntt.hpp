@@ -9,10 +9,62 @@ using namespace std;
 // Roots are precomputed once and the data is kept as uint32_t. mult does a
 // decimation in frequency forward pass (bit-reversed output) and a decimation
 // in time backward pass (bit-reversed input), so it needs no bit reversal.
+// inverse gives the power series 1 / f by Newton iteration in O(n log n),
+// for an NTT prime (NTT::inverse) or any prime mod (NTTAnyMod::inverse).
+
+// a^p modulo mod, shared by everything below.
+int64_t mod_pow(int64_t a, int64_t p, int64_t mod) {
+    int64_t res = 1;
+    a %= mod;
+    while(p) {
+        if(p & 1) {
+            res = res * a % mod;
+        }
+        a = a * a % mod;
+        p >>= 1;
+    }
+    return res;
+}
+
+// First len coefficients of the power series 1 / f modulo a prime mod, values
+// of f in [0, mod) and f[0] != 0. Shared by NTT::inverse and
+// NTTAnyMod::inverse. Schoolbook for the first 32 coefficients, then Newton:
+// if g = 1 / f mod x^k, then g - g * (f * g - 1) = 1 / f mod x^2k, where
+// f * g - 1 vanishes below k. correction(g, k) must return a vector whose
+// entries [k, 2k) are those of g * (f * g - 1).
+template<class F>
+vector<int64_t> newton_inverse(
+    const vector<int64_t>& f, int len, int64_t mod, F correction
+) {
+    vector<int64_t> g(min(len, 32), 0);
+    int64_t inv0 = mod_pow(f[0], mod - 2, mod);
+    for(int i = 0; i < (int)g.size(); i++) {
+        int64_t s = i == 0;
+        for(int j = 1; j <= min(i, (int)f.size() - 1); j++) {
+            s = (s + (mod - f[j]) * g[i - j]) % mod;
+        }
+        g[i] = s * inv0 % mod;
+    }
+
+    for(int k = (int)g.size(); k < len; k <<= 1) {
+        vector<int64_t> c = correction(g, k);
+        g.resize(2 * k);
+        for(int i = k; i < 2 * k; i++) {
+            g[i] = c[i] ? mod - c[i] : 0;
+        }
+    }
+
+    g.resize(len);
+    return g;
+}
+
+class NTTAnyMod;
 
 template<int64_t mod = 998244353, int64_t root = 3>
 class NTT {
   private:
+    friend class NTTAnyMod;
+
     // rt[k + j] = w^j for w a primitive (2k)-th root of unity, j < k.
     inline static vector<uint32_t> rt = {1, 1};
 
@@ -20,23 +72,10 @@ class NTT {
         return (uint64_t)a * b % mod;
     }
 
-    static int64_t pw(int64_t a, int64_t p) {
-        int64_t res = 1;
-        a %= mod;
-        while(p) {
-            if(p & 1) {
-                res = res * a % mod;
-            }
-            a = a * a % mod;
-            p >>= 1;
-        }
-        return res;
-    }
-
     static void prepare_roots(int n) {
         for(int k = (int)rt.size(); k < n; k <<= 1) {
             rt.resize(2 * k);
-            uint32_t z = pw(root, (mod - 1) / (2 * k));
+            uint32_t z = mod_pow(root, (mod - 1) / (2 * k), mod);
             for(int i = k; i < 2 * k; i++) {
                 rt[i] = i & 1 ? mul(rt[i / 2], z) : rt[i / 2];
             }
@@ -73,13 +112,40 @@ class NTT {
         }
     }
 
-    // Copy of a reduced into [0, mod), padded with zeros to size n.
+    // Copy of the first n values of a reduced into [0, mod), padded with
+    // zeros to size n.
     static vector<uint32_t> reduce(const vector<int64_t>& a, int n) {
         vector<uint32_t> f(n, 0);
-        for(int i = 0; i < (int)a.size(); i++) {
+        for(int i = 0; i < min((int)a.size(), n); i++) {
             f[i] = (a[i] % mod + mod) % mod;
         }
         return f;
+    }
+
+    // Transform of size n (power of two), in bit-reversed order.
+    static vector<uint32_t> spectrum(const vector<int64_t>& a, int n) {
+        vector<uint32_t> f = reduce(a, n);
+        dif(f);
+        return f;
+    }
+
+    // Cyclic convolution of size n from two spectra, in natural order.
+    static vector<int64_t> cyclic(
+        vector<uint32_t> fa, const vector<uint32_t>& fb
+    ) {
+        int n = (int)fa.size();
+        uint32_t inv_n = mod_pow(n, mod - 2, mod);
+        for(int i = 0; i < n; i++) {
+            fa[i] = mul(mul(fa[i], fb[i]), inv_n);
+        }
+
+        // dit(dif(x)) is n * x read at -i.
+        dit(fa);
+        vector<int64_t> res(n);
+        for(int i = 0; i < n; i++) {
+            res[i] = fa[(n - i) & (n - 1)];
+        }
+        return res;
     }
 
   public:
@@ -100,7 +166,7 @@ class NTT {
         }
 
         dit(f);
-        uint32_t inv_n = pw(n, mod - 2);
+        uint32_t inv_n = mod_pow(n, mod - 2, mod);
         for(int i = 0; i < n; i++) {
             a[i] = invert ? mul(f[(n - i) & (n - 1)], inv_n) : f[i];
         }
@@ -119,9 +185,9 @@ class NTT {
             n <<= 1;
         }
 
-        vector<uint32_t> fa = reduce(a, n), fb = reduce(b, n);
-        vector<int64_t> res(res_size, 0);
         if(min((int)a.size(), (int)b.size()) <= 32) {
+            vector<uint32_t> fa = reduce(a, n), fb = reduce(b, n);
+            vector<int64_t> res(res_size, 0);
             for(int i = 0; i < (int)a.size(); i++) {
                 for(int j = 0; j < (int)b.size(); j++) {
                     res[i + j] = (res[i + j] + mul(fa[i], fb[j])) % mod;
@@ -130,19 +196,27 @@ class NTT {
             return res;
         }
 
-        dif(fa);
-        dif(fb);
-        uint32_t inv_n = pw(n, mod - 2);
-        for(int i = 0; i < n; i++) {
-            fa[i] = mul(mul(fa[i], fb[i]), inv_n);
-        }
-
-        // dit(dif(x)) is n * x read at -i.
-        dit(fa);
-        for(int i = 0; i < res_size; i++) {
-            res[i] = fa[(n - i) & (n - 1)];
-        }
+        vector<int64_t> res = cyclic(spectrum(a, n), spectrum(b, n));
+        res.resize(res_size);
         return res;
+    }
+
+    // First len coefficients of 1 / f, values in [0, mod), f[0] != 0.
+    // About 5 transforms of size 2k per doubling step k -> 2k.
+    static vector<int64_t> inverse(const vector<int64_t>& f, int len) {
+        return newton_inverse(
+            f, len, mod, [&](const vector<int64_t>& g, int k) {
+                // With deg g < k, the cyclic product of size 2k is exact on
+                // [k, 2k), the wrap-around only reaches [0, k).
+                vector<uint32_t> sg = spectrum(g, 2 * k);
+                auto step = [&](const vector<int64_t>& a) {
+                    vector<int64_t> c = cyclic(spectrum(a, 2 * k), sg);
+                    fill(c.begin(), c.begin() + k, 0);
+                    return c;
+                };
+                return step(step(f));
+            }
+        );
     }
 };
 
@@ -151,30 +225,18 @@ class NTT {
 
 class NTTAnyMod {
   private:
-    static int64_t pw(int64_t a, int64_t p, int64_t mod) {
-        int64_t res = 1;
-        a %= mod;
-        while(p) {
-            if(p & 1) {
-                res = res * a % mod;
-            }
-            a = a * a % mod;
-            p >>= 1;
-        }
-        return res;
-    }
+    static constexpr int64_t p1 = 167772161, p2 = 469762049, p3 = 754974721;
+    using N1 = NTT<p1, 3>;
+    using N2 = NTT<p2, 3>;
+    using N3 = NTT<p3, 11>;
 
-  public:
-    // Values must be in [0, mod).
-    static vector<int64_t> mult_mod(
-        const vector<int64_t>& a, const vector<int64_t>& b, int64_t mod
+    // Combines residues mod p1, p2, p3 of the same exact values into mod.
+    static vector<int64_t> crt(
+        const vector<int64_t>& c1, const vector<int64_t>& c2,
+        const vector<int64_t>& c3, int64_t mod
     ) {
-        const int64_t p1 = 167772161, p2 = 469762049, p3 = 754974721;
-        vector<int64_t> c1 = NTT<p1, 3>::mult(a, b);
-        vector<int64_t> c2 = NTT<p2, 3>::mult(a, b);
-        vector<int64_t> c3 = NTT<p3, 11>::mult(a, b);
-        const int64_t inv_p1 = pw(p1, p2 - 2, p2);
-        const int64_t inv_p12 = pw(p1 * p2 % p3, p3 - 2, p3);
+        static const int64_t inv_p1 = mod_pow(p1, p2 - 2, p2);
+        static const int64_t inv_p12 = mod_pow(p1 * p2 % p3, p3 - 2, p3);
         const int64_t p12 = p1 * p2 % mod;
         vector<int64_t> res(c1.size());
         for(int i = 0; i < (int)c1.size(); i++) {
@@ -186,11 +248,45 @@ class NTTAnyMod {
         }
         return res;
     }
+
+  public:
+    // Values must be in [0, mod).
+    static vector<int64_t> mult_mod(
+        const vector<int64_t>& a, const vector<int64_t>& b, int64_t mod
+    ) {
+        return crt(N1::mult(a, b), N2::mult(a, b), N3::mult(a, b), mod);
+    }
+
+    // First len coefficients of 1 / f for a prime mod < 2^31, values in
+    // [0, mod), f[0] != 0. Same Newton step as NTT::inverse, the spectra of
+    // g are shared by both products and each product goes through CRT.
+    static vector<int64_t> inverse(
+        const vector<int64_t>& f, int len, int64_t mod
+    ) {
+        return newton_inverse(
+            f, len, mod, [&](const vector<int64_t>& g, int k) {
+                vector<uint32_t> s1 = N1::spectrum(g, 2 * k);
+                vector<uint32_t> s2 = N2::spectrum(g, 2 * k);
+                vector<uint32_t> s3 = N3::spectrum(g, 2 * k);
+                auto step = [&](const vector<int64_t>& a) {
+                    vector<int64_t> c =
+                        crt(N1::cyclic(N1::spectrum(a, 2 * k), s1),
+                            N2::cyclic(N2::spectrum(a, 2 * k), s2),
+                            N3::cyclic(N3::spectrum(a, 2 * k), s3), mod);
+                    fill(c.begin(), c.begin() + k, 0);
+                    return c;
+                };
+                return step(step(f));
+            }
+        );
+    }
 };
 
 // vector<int64_t> c = NTT<>::mult(a, b);
 // NTT<>::ntt(a, false); ... NTT<>::ntt(a, true);
+// vector<int64_t> g = NTT<>::inverse(f, len);  // f * g = 1 mod x^len
 // Other primes: NTT<167772161, 3>, NTT<469762049, 3>, NTT<754974721, 11>.
 // vector<int64_t> c = NTTAnyMod::mult_mod(a, b, mod);  // any mod < 2^31
+// vector<int64_t> g = NTTAnyMod::inverse(f, len, mod); // prime mod < 2^31
 
 #endif  // NTT_HPP

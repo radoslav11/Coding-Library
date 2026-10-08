@@ -47,7 +47,7 @@ vector<int64_t> newton_inverse(
     }
 
     for(int k = (int)g.size(); k < len; k <<= 1) {
-        vector<int64_t> c = correction(g, k);
+        auto c = correction(g, k);
         g.resize(2 * k);
         for(int i = k; i < 2 * k; i++) {
             g[i] = c[i] ? mod - c[i] : 0;
@@ -114,25 +114,27 @@ class NTT {
 
     // Copy of the first n values of a reduced into [0, mod), padded with
     // zeros to size n.
-    static vector<uint32_t> reduce(const vector<int64_t>& a, int n) {
+    template<class T>
+    static vector<uint32_t> reduce(const vector<T>& a, int n) {
         vector<uint32_t> f(n, 0);
         for(int i = 0; i < min((int)a.size(), n); i++) {
-            f[i] = (a[i] % mod + mod) % mod;
+            int64_t x = a[i] % mod;
+            f[i] = x < 0 ? x + mod : x;
         }
         return f;
     }
 
     // Transform of size n (power of two), in bit-reversed order.
-    static vector<uint32_t> spectrum(const vector<int64_t>& a, int n) {
+    template<class T>
+    static vector<uint32_t> spectrum(const vector<T>& a, int n) {
         vector<uint32_t> f = reduce(a, n);
         dif(f);
         return f;
     }
 
-    // Cyclic convolution of size n from two spectra, in natural order.
-    static vector<int64_t> cyclic(
-        vector<uint32_t> fa, const vector<uint32_t>& fb
-    ) {
+    // Replaces the spectrum fa by the cyclic convolution of size n of the
+    // two inputs, in natural order. fb may be fa itself (squaring).
+    static void cyclic(vector<uint32_t>& fa, const vector<uint32_t>& fb) {
         int n = (int)fa.size();
         uint32_t inv_n = mod_pow(n, mod - 2, mod);
         for(int i = 0; i < n; i++) {
@@ -141,11 +143,7 @@ class NTT {
 
         // dit(dif(x)) is n * x read at -i.
         dit(fa);
-        vector<int64_t> res(n);
-        for(int i = 0; i < n; i++) {
-            res[i] = fa[(n - i) & (n - 1)];
-        }
-        return res;
+        reverse(fa.begin() + 1, fa.end());
     }
 
   public:
@@ -196,9 +194,10 @@ class NTT {
             return res;
         }
 
-        vector<int64_t> res = cyclic(spectrum(a, n), spectrum(b, n));
-        res.resize(res_size);
-        return res;
+        // Squaring (a == b) needs one forward transform instead of two.
+        vector<uint32_t> fa = spectrum(a, n);
+        cyclic(fa, a == b ? fa : spectrum(b, n));
+        return vector<int64_t>(fa.begin(), fa.begin() + res_size);
     }
 
     // First len coefficients of 1 / f, values in [0, mod), f[0] != 0.
@@ -209,8 +208,9 @@ class NTT {
                 // With deg g < k, the cyclic product of size 2k is exact on
                 // [k, 2k), the wrap-around only reaches [0, k).
                 vector<uint32_t> sg = spectrum(g, 2 * k);
-                auto step = [&](const vector<int64_t>& a) {
-                    vector<int64_t> c = cyclic(spectrum(a, 2 * k), sg);
+                auto step = [&](const auto& a) {
+                    vector<uint32_t> c = spectrum(a, 2 * k);
+                    cyclic(c, sg);
                     fill(c.begin(), c.begin() + k, 0);
                     return c;
                 };
@@ -231,9 +231,10 @@ class NTTAnyMod {
     using N3 = NTT<p3, 11>;
 
     // Combines residues mod p1, p2, p3 of the same exact values into mod.
+    template<class T>
     static vector<int64_t> crt(
-        const vector<int64_t>& c1, const vector<int64_t>& c2,
-        const vector<int64_t>& c3, int64_t mod
+        const vector<T>& c1, const vector<T>& c2, const vector<T>& c3,
+        int64_t mod
     ) {
         static const int64_t inv_p1 = mod_pow(p1, p2 - 2, p2);
         static const int64_t inv_p12 = mod_pow(p1 * p2 % p3, p3 - 2, p3);
@@ -241,7 +242,7 @@ class NTTAnyMod {
         vector<int64_t> res(c1.size());
         for(int i = 0; i < (int)c1.size(); i++) {
             // x = c1 + p1 * k1 + p1 * p2 * k2 with k1 < p2, k2 < p3.
-            int64_t k1 = (c2[i] - c1[i] + p2) * inv_p1 % p2;
+            int64_t k1 = (c2[i] + p2 - c1[i]) * inv_p1 % p2;
             int64_t x = c1[i] + p1 * k1;
             int64_t k2 = (c3[i] - x % p3 + p3) * inv_p12 % p3;
             res[i] = (x + p12 * k2) % mod;
@@ -269,10 +270,13 @@ class NTTAnyMod {
                 vector<uint32_t> s2 = N2::spectrum(g, 2 * k);
                 vector<uint32_t> s3 = N3::spectrum(g, 2 * k);
                 auto step = [&](const vector<int64_t>& a) {
-                    vector<int64_t> c =
-                        crt(N1::cyclic(N1::spectrum(a, 2 * k), s1),
-                            N2::cyclic(N2::spectrum(a, 2 * k), s2),
-                            N3::cyclic(N3::spectrum(a, 2 * k), s3), mod);
+                    vector<uint32_t> c1 = N1::spectrum(a, 2 * k);
+                    vector<uint32_t> c2 = N2::spectrum(a, 2 * k);
+                    vector<uint32_t> c3 = N3::spectrum(a, 2 * k);
+                    N1::cyclic(c1, s1);
+                    N2::cyclic(c2, s2);
+                    N3::cyclic(c3, s3);
+                    vector<int64_t> c = crt(c1, c2, c3, mod);
                     fill(c.begin(), c.begin() + k, 0);
                     return c;
                 };

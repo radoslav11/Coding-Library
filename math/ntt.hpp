@@ -9,8 +9,12 @@ using namespace std;
 // Roots are precomputed once and the data is kept as uint32_t in Montgomery
 // friendly form. The forward pass outputs bit-reversed order and the backward
 // pass takes it, so mult and inverse need no bit reversal.
-// The loops auto-vectorize under #pragma GCC optimize("O3") and
-// #pragma GCC target("avx2") (put after the includes), about 1.3x faster.
+// When using this file, keep these two lines right after the includes in the
+// solution (GCC rejects target before <bits/stdc++.h>):
+// #pragma GCC optimize("O3")
+// #pragma GCC target("avx2")
+// They let GCC vectorize the Montgomery loops, about 1.3x faster; without them
+// the 2^20 any-mod inverse + square in 2267G went from AC (1812 ms) to TLE.
 // inverse gives the power series 1 / f by Newton iteration in O(n log n),
 // for an NTT prime (NTT::inverse) or any prime mod (NTTAnyMod::inverse).
 

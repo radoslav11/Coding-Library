@@ -11,19 +11,7 @@ class MinCostFlow {
   private:
     const static T inf = numeric_limits<T>::max();
 
-    struct Edge {
-        int to, rev;
-        T capacity, cost, flow;
-        Edge(int _to, int _rev, T _capacity, T _cost, T _flow)
-            : to(_to),
-              rev(_rev),
-              capacity(_capacity),
-              cost(_cost),
-              flow(_flow) {}
-    };
-
     int n;
-    vector<vector<Edge>> g;
     vector<T> potential;
     vector<pair<int, int>> parent;
     vector<pair<T, T>> dist;
@@ -81,6 +69,19 @@ class MinCostFlow {
     }
 
   public:
+    struct Edge {
+        int to, rev;
+        T capacity, cost, flow;
+        Edge(int _to, int _rev, T _capacity, T _cost, T _flow)
+            : to(_to),
+              rev(_rev),
+              capacity(_capacity),
+              cost(_cost),
+              flow(_flow) {}
+    };
+
+    vector<vector<Edge>> g;
+
     MinCostFlow(int _n = 0) { init(_n); }
 
     void init(int _n) {
